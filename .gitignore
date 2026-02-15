@@ -1,0 +1,42 @@
+# 执行文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 日志文件
+*.log
+
+# 配置文件
+config.json
+
+# 视频文件和HLS切片
+static/videos/**/*.mp4
+static/videos/**/*.flv
+static/videos/**/*.mkv
+static/videos/**/*.avi
+static/hls/**
+
+# 测试数据库
+test_db/
+
+# FFmpeg工具
+ffmpeg/
+
+# IDE文件
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
+# 临时文件
+*.tmp
+*.temp

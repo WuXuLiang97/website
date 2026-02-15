@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>搜索结果 - {{.Keyword}}</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- 搜索结果页面头部 -->
+      <header class="site-header">
+        <div class="search-result-header">
+          <div class="header-content">
+            <a href="/" class="back-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              返回首页
+            </a>
+            <a href="/history" class="back-btn" style="margin-left: 10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 4h18v8H3z"></path>
+                <path d="M3 12h18v8H3z"></path>
+              </svg>
+              播放记录
+            </a>
+            <div class="search-result-info">
+              <h1>搜索 "{{.Keyword}}" 的结果</h1>
+              <p class="result-count">{{if .Animes}}找到 {{len .Animes}} 个相关结果{{else}}未找到相关结果{{end}}</p>
+            </div>
+          </div>
+          <!-- 搜索结果页的搜索框 -->
+          <form action="/search" method="get" class="search-form result-search-form">
+            <div class="search-box">
+              <input
+                type="text"
+                name="keyword"
+                placeholder="继续搜索其他动画..."
+                required
+                value="{{.Keyword}}"
+              />
+              <button type="submit" class="search-btn">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                搜索
+              </button>
+            </div>
+          </form>
+        </div>
+      </header>
+
+      <main class="anime-list">
+        {{if .Animes}}
+        <div class="results-container">
+          {{range .Animes}}
+          <div class="result-card">
+            <div class="result-card-left">
+              <div class="result-cover">
+                <img src="{{.Cover}}" alt="{{.Title}}" onerror="this.src='/static/css/default-cover.jpg'" />
+                <div class="play-overlay">
+                  <svg class="play-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="result-card-right">
+              <h3 class="result-title">{{.Title}}</h3>
+              <div class="result-meta">
+                <span class="score-badge">{{.Score}}</span>
+                <span class="episodes">共{{.Episodes}}集</span>
+              </div>
+              <p class="result-summary">{{.Summary}}</p>
+              <div class="result-actions">
+                {{if .VideoList}}
+                <div class="episode-selector">
+                  <h4>选择集数：</h4>
+                  <div class="episode-buttons">
+                    {{range .VideoList}}
+                    <a
+                      href="/play?video={{.Path | urlquery}}&title={{$.Title | urlquery}}-{{.FileName | urlquery}}&summary={{$.Summary | urlquery}}&keyword={{$.DirName | urlquery}}"
+                      class="episode-btn"
+                      >{{.FileName}}</a
+                    >
+                    {{end}}
+                  </div>
+                </div>
+                {{else}}
+                <span class="no-episodes">暂无可用集数</span>
+                {{end}}
+              </div>
+            </div>
+          </div>
+          {{end}}
+        </div>
+        {{else}}
+        <div class="no-result">
+          <div class="no-result-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="13" y1="9" x2="13" y2="9"></line>
+              <line x1="13" y1="15" x2="13" y2="15"></line>
+            </svg>
+          </div>
+          <h2>未找到相关结果</h2>
+          <p>抱歉，没有找到与 "{{.Keyword}}" 相关的动画资源</p>
+          <div class="no-result-actions">
+            <a href="/" class="home-btn">返回首页</a>
+            <form action="/search" method="get" class="retry-search">
+              <input
+                type="text"
+                name="keyword"
+                placeholder="尝试其他关键词..."
+                required
+              />
+              <button type="submit" class="search-btn">重新搜索</button>
+            </form>
+          </div>
+        </div>
+        {{end}}
+      </main>
+
+      <footer class="site-footer">
+        <p>© 2026 动画视频网站 | 本网站仅用于学习交流</p>
+      </footer>
+    </div>
+  </body>
+</html>

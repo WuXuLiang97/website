@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 - 动画视频网站</title>
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+    /* 登录页面样式 */
+    .auth-container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-header h1 {
+      color: #2c3e50;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .auth-header p {
+      color: #7f8c8d;
+      font-size: 1rem;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      color: #34495e;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+    }
+
+    .auth-btn {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .auth-btn:hover {
+      background: linear-gradient(135deg, #2980b9, #21618c);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    .auth-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .auth-link a {
+      color: #3498db;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .auth-link a:hover {
+      color: #2980b9;
+      text-decoration: underline;
+    }
+
+    .error-message {
+      background: #fee;
+      color: #e74c3c;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .success-message {
+      background: #efe;
+      color: #27ae60;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      border-left: 4px solid #27ae60;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bili-header">
+    <div class="bili-header__bar">
+      <ul class="left-entry">
+        <li>
+          <a href="/" class="entry-title"> <img src="static/1.bmp" class="bili-logo">首页</a>
+        </li>
+        <li class="v-popover-wrap">
+          <a href="/hls" class="default-entry">HLS切片</a>
+        </li>
+
+      </ul>
+      <form action="/search" method="get" class="search-form">
+        <div class="search-box">
+          <input type="text" name="keyword" id="search-input" placeholder="输入动画名称搜索（如：海贼王、火影忍者）..." required
+            autocomplete="off" />
+          <button type="submit" class="search-btn">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            搜索
+          </button>
+        </div>
+        <!-- 搜索建议区域 -->
+        <div id="search-suggestions" class="search-suggestions"></div>
+      </form>
+      <ul class="right-entry">
+        <li>
+          <a href="/history" class="bili-header__nav-link">播放记录</a>
+        </li>
+        <li>
+          <a href="/register" class="bili-header__nav-link">注册</a>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1>用户登录</h1>
+      <p>欢迎回来，请登录您的账号</p>
+    </div>
+
+    <div id="message-container"></div>
+
+    <form id="login-form" class="auth-form">
+      <div class="form-group">
+        <label for="username">用户名</label>
+        <input type="text" id="username" name="username" required placeholder="请输入用户名" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" name="password" required placeholder="请输入密码" />
+      </div>
+
+      <button type="submit" class="auth-btn">登录</button>
+    </form>
+
+    <div class="auth-link">
+      <p>还没有账号？ <a href="/register">立即注册</a></p>
+    </div>
+  </div>
+
+  <script>
+    // 处理登录表单提交
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageContainer = document.getElementById('message-container');
+
+      // 显示加载状态
+      messageContainer.innerHTML = '<div class="success-message">正在登录...</div>';
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          messageContainer.innerHTML = '<div class="success-message">登录成功，正在跳转...</div>';
+          // 跳转到首页
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        } else {
+          messageContainer.innerHTML = `<div class="error-message">${data.error || '登录失败'}</div>`;
+        }
+      } catch (error) {
+        messageContainer.innerHTML = '<div class="error-message">网络错误，请稍后重试</div>';
+        console.error('登录失败:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>

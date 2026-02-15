@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS常用属性速查手册 - 动画视频网站专用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        /* 整体布局 */
+        .container {
+            display: flex;
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        /* 侧边目录 */
+        .sidebar {
+            width: 260px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            bottom: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 99;
+        }
+
+        .sidebar-title {
+            font-size: 20px;
+            color: #fb7299;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 12px;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 15px;
+            transition: color 0.2s ease;
+            display: block;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fb7299;
+            background-color: #fef5f7;
+        }
+
+        .sidebar-nav .sub-title {
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        /* 主内容区 */
+        .main {
+            flex: 1;
+            margin-left: 300px;
+            padding: 0 40px 40px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #fb7299;
+        }
+
+        /* 章节样式 */
+        .chapter {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chapter h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fb7299;
+            position: relative;
+            top: -5px;
+        }
+
+        .chapter h3 {
+            font-size: 18px;
+            color: #fb7299;
+            margin: 20px 0 15px;
+        }
+
+        .chapter p {
+            margin-bottom: 12px;
+            color: #555;
+        }
+
+        .chapter ul, .chapter ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .chapter li {
+            margin-bottom: 8px;
+        }
+
+        /* 代码块样式 */
+        pre {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            border-left: 4px solid #fb7299;
+        }
+
+        code {
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            color: #e74c3c;
+            padding: 2px 4px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            font-size: 90%;
+        }
+
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background-color: #fef5f7;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* 高亮提示 */
+        .tip {
+            background-color: #f0f9ff;
+            border-left: 4px solid #3498db;
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            color: #2c7aaf;
+        }
+
+        /* 回到顶部按钮 */
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            background-color: #fb7299;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(251, 114, 153, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 999;
+        }
+
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #back-to-top:hover {
+            background-color: #f8598b;
+            transform: translateY(-3px);
+        }
+
+        /* 响应式适配 - 移动端 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .sidebar {
+                display: none;
+                position: static;
+                width: 100%;
+                margin-bottom: 20px;
+                bottom: auto;
+                top: auto;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 0 10px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .chapter {
+                padding: 20px;
+            }
+
+            .chapter h2 {
+                font-size: 20px;
+            }
+
+            #back-to-top {
+                width: 40px;
+                height: 40px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边目录 -->
+        <aside class="sidebar">
+            <h3 class="sidebar-title">CSS属性手册</h3>
+            <ul class="sidebar-nav">
+                <li><a href="#box-model">一、核心盒模型属性</a></li>
+                <li class="sub-title">盒模型子属性</li>
+                <li><a href="#width">width</a></li>
+                <li><a href="#height">height</a></li>
+                <li><a href="#margin">margin</a></li>
+                <li><a href="#padding">padding</a></li>
+                <li><a href="#box-sizing">box-sizing</a></li>
+                <li><a href="#layout">二、布局控制属性</a></li>
+                <li><a href="#display">display</a></li>
+                <li><a href="#flex">flex弹性布局</a></li>
+                <li><a href="#grid">grid网格布局</a></li>
+                <li><a href="#position">三、定位属性</a></li>
+                <li><a href="#pos-type">position</a></li>
+                <li><a href="#pos-offset">top/right/bottom/left</a></li>
+                <li><a href="#z-index">z-index</a></li>
+                <li><a href="#visual">四、视觉样式属性</a></li>
+                <li><a href="#border-radius">border-radius</a></li>
+                <li><a href="#box-shadow">box-shadow</a></li>
+                <li><a href="#background">background</a></li>
+                <li><a href="#color">color</a></li>
+                <li><a href="#object-fit">object-fit</a></li>
+                <li><a href="#border">border</a></li>
+                <li><a href="#interactive">五、交互/过渡属性</a></li>
+                <li><a href="#transition">transition</a></li>
+                <li><a href="#transform">transform</a></li>
+                <li><a href="#cursor">cursor</a></li>
+                <li><a href="#hover">:hover伪类</a></li>
+                <li><a href="#text">六、文本相关属性</a></li>
+                <li><a href="#text-align">text-align</a></li>
+                <li><a href="#overflow">overflow</a></li>
+                <li><a href="#text-ellipsis">文字省略</a></li>
+                <li><a href="#common">七、高频复用样式</a></li>
+            </ul>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main">
+            <h1 class="page-title">CSS常用属性速查手册 - 动画视频网站专用</h1>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">贴合动画视频网站开发场景，精选高频属性，新手易查易用</p>
+
+            <!-- 一、核心盒模型属性 -->
+            <section class="chapter" id="box-model">
+                <h2>一、核心盒模型属性（布局基础，必懂）</h2>
+                <p class="tip">盒模型是CSS布局的核心，你的代码中已全局设置<code>box-sizing: border-box</code>，这是前端最佳实践，以下属性均基于此。</p>
+
+                <h3 id="width">1. width</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>内容宽度</strong>（border-box下，宽度包含content+padding+border，不会撑大元素）</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li><code>auto</code>：默认值，浏览器自动计算宽度（块级元素默认占满父容器，行内元素随内容变化）</li>
+                    <li>具体数值：<code>px</code>（固定宽度，如你项目的148px、60px）、<code>rem</code>（适配移动端，相对根字体）</li>
+                    <li>百分比：<code>%</code>（相对父容器宽度，如100%占满父容器）</li>
+                    <li><code>max-content</code>：宽度自适应内容最大宽度（适合包裹文字/小元素）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.anime-card { width: 100%; } /* 占满网格列宽 */
+.bili-logo { width: 36px; } /* LOGO固定宽度 */
+.search-form { width: 400px; } /* 搜索框固定宽度（B站风格） */</pre>
+
+                <h3 id="height">2. height</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>内容高度</strong>（同width，border-box下包含content+padding+border）</p>
+                <p><strong>核心取值</strong>：和width一致，新增<code>min-height</code>/<code>max-height</code>（最小/最大高度，防止元素过高/过矮）</p>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.bili-header { height: 60px; } /* 导航栏固定高度 */
+.anime-cover { height: 198px; } /* 动画封面固定高度 */
+.search-form { height: 38px; } /* 搜索框固定高度 */</pre>
+                <p><strong>注意</strong>：块级元素默认高度为<code>auto</code>（随内容变化），行内元素设置height通常无效。</p>
+
+                <h3 id="margin">3. margin</h3>
+                <p><strong>核心作用</strong>：设置元素<strong>外部间距</strong>（元素与其他元素的距离，不占元素自身宽度/高度），可单独设置上下左右，也可简写。</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li>具体数值：<code>px</code>（如20px、8px）、<code>%</code>（相对父容器宽度）</li>
+                    <li><code>auto</code>：自动居中（水平方向有效，如<code>margin: 0 auto</code>让块级元素水平居中）</li>
+                    <li>简写：<code>margin: 上 右 下 左</code>（顺时针，缺省则对称，如<code>margin: 20px 10px</code>=上下20，左右10）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.container { margin: 0 auto; } /* 页面容器水平居中 */
+.anime-grid { gap: 25px; } /* 等价于margin间距，网格布局专用 */
+.result-card-left { margin: 0 auto; } /* 移动端图片水平居中 */</pre>
+
+                <h3 id="padding">4. padding</h3>
+                <p><strong>核心作用</strong>：设置元素<strong>内部间距</strong>（内容与元素边框的距离，border-box下计入width/height，不会撑大元素）</p>
+                <p><strong>核心取值</strong>：和margin一致，无<code>auto</code>取值，仅支持数值/百分比，支持简写。</p>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.result-card-right { padding: 20px; } /* 卡片右侧内容内边距 */
+.search-input { padding: 0 20px; } /* 搜索框左右内边距，上下无 */
+.bili-header__bar { padding: 0 20px; } /* 导航栏内容左右内边距 */</pre>
+
+                <h3 id="box-sizing">5. box-sizing</h3>
+                <p><strong>核心作用</strong>：定义CSS盒模型的<strong>宽度/高度计算方式</strong>（你的代码已全局设置，是前端必加属性）</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li><code>border-box</code>：推荐！宽度=content+padding+border（设置width后，padding/border不会撑大元素）</li>
+                    <li><code>content-box</code>：默认值，宽度=仅content（padding/border会撑大元素，易导致布局错乱）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+* { box-sizing: border-box; } /* 全局生效，所有元素都用border-box */</pre>
+            </section>
+
+            <!-- 二、布局控制属性 -->
+            <section class="chapter" id="layout">
+                <h2>二、布局控制属性（实现页面结构，如B站导航、动画网格）</h2>
+
+                <h3 id="display">1. display</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>显示类型</strong>，决定元素是块级、行内、弹性布局还是网格布局，是布局核心。</p>
+                <p><strong>核心取值</strong>（项目高频）：</p>
+                <ul>
+                    <li><code>block</code>：块级元素（独占一行，可设置width/height，如div、h2、p）</li>
+                    <li><code>inline</code>：行内元素（不独占一行，不可设置width/height，如span、a）</li>
+                    <li><code>inline-block</code>：行内块元素（不独占一行，可设置width/height，如按钮、图标）</li>
+                    <li><code>flex</code>：弹性布局（父元素设置，子元素可灵活排列，如B站导航、搜索框）</li>
+                    <li><code>grid</code>：网格布局（父元素设置，子元素按行列排列，如你的动画卡片网格.anime-grid）</li>
+                    <li><code>none</code>：隐藏元素（元素从页面中消失，不占位置，区别于<code>visibility: hidden</code>）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.bili-header__bar { display: flex; } /* B站导航弹性布局，子元素垂直居中 */
+.anime-grid { display: grid; } /* 动画卡片网格布局，自动分行列 */
+.search-box { display: flex; } /* 搜索框弹性布局，输入框+按钮横向排列 */</pre>
+
+                <h3 id="flex">2. flex 弹性布局子属性（display: flex配套使用，B站导航核心）</h3>
+                <p>父元素设置<code>display: flex</code>后，子元素默认横向排列，以下属性用于<strong>父元素</strong>，控制子元素整体排列：</p>
+                <table>
+                    <tr>
+                        <th>属性名</th>
+                        <th>作用</th>
+                        <th>常用取值</th>
+                        <th>项目示例</th>
+                    </tr>
+                    <tr>
+                        <td>justify-content</td>
+                        <td>控制子元素<strong>主轴方向</strong>（默认水平）的对齐方式</td>
+                        <td>center（居中，B站搜索框）、space-between（两端对齐，B站导航）、flex-start（左对齐）、flex-end（右对齐）</td>
+                        <td>.bili-header__bar { justify-content: space-between; }</td>
+                    </tr>
+                    <tr>
+                        <td>align-items</td>
+                        <td>控制子元素<strong>交叉轴方向</strong>（默认垂直）的对齐方式</td>
+                        <td>center（垂直居中，B站导航核心）、flex-start（上对齐）、flex-end（下对齐）</td>
+                        <td>.bili-header__bar { align-items: center; }</td>
+                    </tr>
+                    <tr>
+                        <td>gap</td>
+                        <td>控制子元素之间的<strong>间距</strong>（替代margin，更简洁）</td>
+                        <td>px数值（如24px、8px）</td>
+                        <td>.left-entry { gap: 24px; }</td>
+                    </tr>
+                </table>
+
+                <h3 id="grid">3. grid 网格布局子属性（.anime-grid配套使用）</h3>
+                <table>
+                    <tr>
+                        <th>属性名</th>
+                        <th>作用</th>
+                        <th>常用取值</th>
+                        <th>项目示例</th>
+                    </tr>
+                    <tr>
+                        <td>grid-template-columns</td>
+                        <td>设置网格<strong>列数和列宽</strong></td>
+                        <td>repeat(auto-fill, 148px)（自动分行，每列148px）、1fr 1fr 1fr（3列等宽）</td>
+                        <td>.anime-grid { grid-template-columns: repeat(auto-fill, 148px); }</td>
+                    </tr>
+                    <tr>
+                        <td>justify-content</td>
+                        <td>网格整体在父容器中的<strong>水平对齐方式</strong></td>
+                        <td>center（居中，你的动画网格）、flex-start、space-between</td>
+                        <td>.anime-grid { justify-content: center; }</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- 三、定位属性 -->
+            <section class="chapter" id="position">
+                <h2>三、定位属性（实现元素悬浮/固定，如B站固定导航、徽章、搜索建议）</h2>
+
+                <h3 id="pos-type">1. position</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>定位方式</strong>，结合<code>top/right/bottom/left</code>使用，实现元素自由摆放。</p>
+                <p><strong>核心取值</strong>（项目高频）：</p>
+                <ul>
+                    <li><code>static</code>：默认值，无定位（遵循正常文档流，top/left等属性无效）</li>
+                    <li><code>fixed</code>：固定定位（相对于<strong>浏览器窗口</strong>定位，滚动页面时位置不变，如B站导航、回到顶部按钮）</li>
+                    <li><code>absolute</code>：绝对定位（相对于<strong>最近的已定位父元素</strong>定位，脱离文档流，不占位置，如集数徽章、播放遮罩）</li>
+                    <li><code>relative</code>：相对定位（相对于<strong>自身原有位置</strong>定位，不脱离文档流，占位置，通常作为absolute的父容器）</li>
+                </ul>
+                <p class="tip"><strong>关键原则</strong>：子绝父相（子元素用absolute，父元素必须用relative，否则子元素相对于浏览器窗口定位）</p>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.bili-header { position: fixed; top: 0; left: 0; right: 0; } /* B站导航固定在顶部 */
+.anime-cover { position: relative; } /* 作为集数徽章的父容器，相对定位 */
+.episode-badge { position: absolute; top: 8px; left: 8px; } /* 集数徽章绝对定位，基于父容器 */
+#search-suggestions { position: absolute; top: 100%; left: 0; } /* 搜索建议绝对定位，在搜索框下方 */</pre>
+
+                <h3 id="pos-offset">2. top / right / bottom / left</h3>
+                <p><strong>核心作用</strong>：配合<code>position: fixed/absolute/relative</code>使用，设置元素的<strong>定位偏移量</strong>。</p>
+                <p><strong>核心取值</strong>：<code>px</code>数值（如8px、100%）、<code>%</code>（相对父容器对应方向的尺寸）</p>
+                <p><strong>注意</strong>：<code>position: static</code>时，这些属性无效。</p>
+
+                <h3 id="z-index">3. z-index</h3>
+                <p><strong>核心作用</strong>：设置<strong>定位元素</strong>（fixed/absolute/relative）的<strong>层级顺序</strong>，数值越大，元素越在上方，防止被遮挡。</p>
+                <p><strong>核心取值</strong>：正整数（如999、9999，无单位），默认值0。</p>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.bili-header { z-index: 9999; } /* 导航栏层级最高，不被任何内容遮挡 */
+#search-suggestions { z-index: 9999; } /* 搜索建议层级高于其他内容 */
+.episode-badge { z-index: 2; } /* 集数徽章高于封面图 */</pre>
+                <p><strong>注意</strong>：非定位元素（static）设置z-index无效。</p>
+            </section>
+
+            <!-- 四、视觉样式属性 -->
+            <section class="chapter" id="visual">
+                <h2>四、视觉样式属性（美化页面，如卡片、按钮、封面）</h2>
+
+                <h3 id="border-radius">1. border-radius</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>圆角</strong>，你的项目大量使用（卡片、搜索框、按钮），是现代网页的基础美化属性。</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li><code>px</code>数值（如4px、12px，数值越大圆角越明显）</li>
+                    <li><code>50%</code>：圆形（元素宽高相等时，如圆形头像、圆形按钮）</li>
+                    <li>简写：<code>border-radius: 上左 上右 下右 下左</code>（顺时针，缺省对称）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.anime-card { border-radius: 12px; } /* 卡片圆角 */
+.search-box { border-radius: 20px; } /* B站风格圆形搜索框 */
+.search-btn { border-radius: 0 20px 20px 0; } /* 搜索按钮仅右侧圆角，匹配搜索框 */</pre>
+
+                <h3 id="box-shadow">2. box-shadow</h3>
+                <p><strong>核心作用</strong>：给元素添加<strong>阴影</strong>，增加立体感（你的项目用于卡片、导航、搜索框）。</p>
+                <p><strong>核心取值</strong>：<code>box-shadow: 水平偏移 垂直偏移 模糊半径 阴影大小 阴影颜色 内阴影/外阴影</code></p>
+                <ul>
+                    <li>水平偏移：正右负左（如0、4px）</li>
+                    <li>垂直偏移：正下负上（如1px、8px）</li>
+                    <li>模糊半径：阴影的模糊程度（如3px、15px，0为硬阴影）</li>
+                    <li>阴影大小：可选，阴影的扩散范围（如0、2px）</li>
+                    <li>阴影颜色：如<code>rgba(0,0,0,0.1)</code>（半透明黑色，推荐用rgba，可调节透明度）</li>
+                    <li>内阴影：可选，<code>inset</code>（默认外阴影，不加则可）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.bili-header { box-shadow: 0 1px 3px rgba(0,0,0,0.1); } /* 导航栏轻阴影 */
+.anime-card { box-shadow: 0 4px 15px rgba(0,0,0,0.1); } /* 卡片立体阴影 */
+.anime-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.15); } /* 鼠标悬浮阴影加深 */</pre>
+
+                <h3 id="background">3. background</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>背景</strong>（颜色、图片、渐变），支持简写，你的项目用于按钮、导航、封面占位。</p>
+                <p><strong>核心取值</strong>（项目高频）：</p>
+                <ul>
+                    <li>纯色：<code>background-color: #fff</code>（白色）、<code>background: #fb7299</code>（B站粉色，简写）</li>
+                    <li>渐变色：<code>linear-gradient(方向, 颜色1, 颜色2)</code>（线性渐变，如你的旧版搜索按钮）<br>
+                        方向：<code>135deg</code>（斜向）、<code>to right</code>（从左到右）</li>
+                    <li>透明背景：<code>background: transparent</code></li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.bili-header { background-color: #fff; } /* 导航栏白色背景 */
+.search-box { background: #f5f5f5; } /* 搜索框浅灰背景 */
+.search-btn { background: #fb7299; } /* B站风格粉色按钮 */
+.anime-cover { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); } /* 封面占位渐变 */</pre>
+
+                <h3 id="color">4. color</h3>
+                <p><strong>核心作用</strong>：设置<strong>文字颜色</strong>，你的项目用于链接、按钮文字、标题。</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li>十六进制：<code>#333</code>（深灰）、<code>#fb7299</code>（B站粉色）、<code>#fff</code>（白色）</li>
+                    <li>RGB/RGBA：<code>rgba(255,255,255,0.9)</code>（半透明白色，如集数徽章）</li>
+                    <li>预定义颜色：<code>red</code>、<code>white</code>（不推荐，灵活性差）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.entry-title { color: #333; } /* 导航文字深灰 */
+.entry-title:hover { color: #fb7299; } /* 鼠标悬浮变B站粉色 */
+.search-btn { color: #fff; } /* 按钮文字白色 */</pre>
+
+                <h3 id="object-fit">5. object-fit</h3>
+                <p><strong>核心作用</strong>：设置<strong>替换元素</strong>（img、video）的<strong>内容填充方式</strong>，解决图片拉伸/变形问题（你的项目核心用于动画封面）。</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li><code>cover</code>：推荐！保持图片比例，裁剪多余部分，填满容器（封面图必用，不变形）</li>
+                    <li><code>contain</code>：保持图片比例，完整显示图片，容器可能留空白</li>
+                    <li><code>fill</code>：默认值，拉伸图片填满容器，图片易变形</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.anime-cover img { object-fit: cover; } /* 动画封面保持比例，填满容器，不变形 */
+.result-cover img { object-fit: cover; } /* 搜索结果封面同效 */</pre>
+                <p class="tip"><strong>注意</strong>：使用时必须给img设置固定的width/height，否则无效。</p>
+
+                <h3 id="border">6. border</h3>
+                <p><strong>核心作用</strong>：设置元素的<strong>边框</strong>（宽度、样式、颜色），支持简写，你的项目用于搜索框、按钮、分割线。</p>
+                <p><strong>核心取值</strong>：<code>border: 宽度 样式 颜色</code>（缺一不可）</p>
+                <ul>
+                    <li>宽度：<code>1px</code>、<code>2px</code></li>
+                    <li>样式：<code>solid</code>（实线，常用）、<code>dashed</code>（虚线）、<code>none</code>（无边框）</li>
+                    <li>颜色：<code>#e5e5e5</code>（浅灰，搜索框边框）、<code>#fb7299</code>（高亮边框）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.search-box { border: 1px solid #e5e5e5; } /* 搜索框浅灰边框 */
+.search-box:focus-within { border-color: #fb7299; } /* 搜索框聚焦变粉色边框 */
+.site-footer { border-top: 1px solid #eee; } /* 仅顶部边框，分割线 */</pre>
+            </section>
+
+            <!-- 五、交互/过渡属性 -->
+            <section class="chapter" id="interactive">
+                <h2>五、交互/过渡属性（实现鼠标悬浮、动画效果，提升体验）</h2>
+
+                <h3 id="transition">1. transition</h3>
+                <p><strong>核心作用</strong>：给元素的<strong>样式变化</strong>添加<strong>平滑过渡动画</strong>（你的项目大量用于hover效果，如卡片上浮、颜色变化），无需JS。</p>
+                <p><strong>核心取值</strong>：<code>transition: 属性 时长 缓动函数</code></p>
+                <ul>
+                    <li>属性：<code>all</code>（所有样式变化都加动画，推荐）、<code>color</code>（仅颜色）、<code>transform</code>（仅变形）</li>
+                    <li>时长：<code>0.2s</code>、<code>0.3s</code>（秒，数值越大动画越慢）</li>
+                    <li>缓动函数：<code>ease</code>（默认，先慢后快再慢，自然）、<code>linear</code>（匀速）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.entry-title { transition: color 0.2s ease; } /* 导航文字颜色平滑变化 */
+.anime-card { transition: all 0.3s ease; } /* 卡片所有样式变化都加动画 */
+.more-btn { transition: background-color 0.3s ease; } /* 按钮背景色平滑变化 */</pre>
+
+                <h3 id="transform">2. transform</h3>
+                <p><strong>核心作用</strong>：对元素进行<strong>变形</strong>（平移、缩放、旋转），不影响其他元素的布局，你的项目用于卡片上浮、封面缩放。</p>
+                <p><strong>核心取值</strong>（项目高频）：</p>
+                <ul>
+                    <li><code>translateY(-5px)</code>：垂直向上平移5px（卡片hover上浮，<code>translateX</code>为水平平移）</li>
+                    <li><code>scale(1.08)</code>：放大1.08倍（封面hover缩放，<code>scale(0.9)</code>为缩小）</li>
+                    <li><code>rotate(30deg)</code>：旋转30度（少用，适合图标）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.anime-card:hover { transform: translateY(-5px); } /* 卡片鼠标悬浮向上浮 */
+.anime-cover img:hover { transform: scale(1.08); } /* 封面鼠标悬浮轻微放大 */
+.more-icon:hover { transform: translateY(2px); } /* 查看更多图标向下平移 */</pre>
+
+                <h3 id="cursor">3. cursor</h3>
+                <p><strong>核心作用</strong>：设置鼠标悬浮在元素上时的<strong>光标样式</strong>，提示用户该元素可交互。</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li><code>pointer</code>：手型光标（可点击元素，如按钮、链接、卡片，必设）</li>
+                    <li><code>default</code>：默认箭头光标（不可点击元素）</li>
+                    <li><code>text</code>：文本光标（输入框，浏览器默认）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.more-btn { cursor: pointer; } /* 按钮手型光标 */
+.anime-card { cursor: pointer; } /* 卡片手型光标，提示可点击 */</pre>
+
+                <h3 id="hover">4. :hover 伪类</h3>
+                <p><strong>核心作用</strong>：设置<strong>鼠标悬浮在元素上时</strong>的样式，配合<code>transition</code>实现平滑动画，是前端交互的基础。</p>
+                <p><strong>使用规则</strong>：在元素选择器后加<code>:hover</code>，如<code>.anime-card:hover</code>、<code>.search-btn:hover</code></p>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.search-btn:hover { background: #f8598b; } /* 按钮悬浮背景加深 */
+.anime-card:hover .anime-card-title { color: #3498db; } /* 卡片悬浮，标题变蓝色 */</pre>
+            </section>
+
+            <!-- 六、文本相关属性 -->
+            <section class="chapter" id="text">
+                <h2>六、文本相关属性（控制文字显示，如标题、简介、省略号）</h2>
+
+                <h3 id="text-align">1. text-align</h3>
+                <p><strong>核心作用</strong>：设置<strong>块级元素</strong>内文字的<strong>水平对齐方式</strong>。</p>
+                <p><strong>核心取值</strong>：<code>center</code>（居中，如页脚文字、卡片标题）、<code>left</code>（左对齐，默认）、<code>right</code>（右对齐）</p>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+.anime-card-title { text-align: center; } /* 动画卡片标题居中 */
+.site-footer { text-align: center; } /* 页脚文字居中 */</pre>
+
+                <h3 id="overflow">2. overflow</h3>
+                <p><strong>核心作用</strong>：设置元素<strong>内容超出容器时</strong>的处理方式，常和<code>text-overflow</code>配合实现文字省略。</p>
+                <p><strong>核心取值</strong>：</p>
+                <ul>
+                    <li><code>hidden</code>：隐藏超出的内容（必设，否则文字会溢出）</li>
+                    <li><code>auto</code>：超出时显示滚动条（如搜索建议框）</li>
+                    <li><code>scroll</code>：始终显示滚动条（少用）</li>
+                </ul>
+                <p><strong>项目示例</strong>：</p>
+                <pre>
+#search-suggestions { overflow-y: auto; } /* 搜索建议框垂直超出时显示滚动条 */
+.anime-card-title { overflow: hidden; } /* 卡片标题超出时隐藏 */</pre>
+
+                <h3 id="text-ellipsis">3. text-overflow + -webkit-line-clamp（文字省略，核心）</h3>
+                <p><strong>核心作用</strong>：实现<strong>单行/多行文字超出时显示省略号</strong>（你的项目用于卡片标题、简介），是前端高频需求。</p>
+                <p><strong>单行省略（必备3行）</strong>：</p>
+                <pre>
+.text {
+  white-space: nowrap; /* 文字不换行 */
+  overflow: hidden; /* 隐藏超出内容 */
+  text-overflow: ellipsis; /* 超出显示省略号 */
+}</pre>
+                <p><strong>多行省略（仅webkit内核，浏览器均支持，你的项目用2行/3行）</strong>：</p>
+                <pre>
+.anime-card-title {
+  display: -webkit-box; /* 必须设，弹性盒模型 */
+  -webkit-line-clamp: 2; /* 显示2行，超出省略 */
+  -webkit-box-orient: vertical; /* 垂直排列 */
+  overflow: hidden; /* 必须设，隐藏超出内容 */
+  text-overflow: ellipsis;
+}
+.result-summary {
+  -webkit-line-clamp: 3; /* 显示3行，超出省略 */
+}</pre>
+            </section>
+
+            <!-- 七、高频复用样式 -->
+            <section class="chapter" id="common">
+                <h2>七、项目高频复用样式（直接复制使用）</h2>
+                <p>以下样式为动画视频网站开发中高频使用的通用样式，可直接复制到CSS中调用，无需重复编写。</p>
+
+                <h3>1. 水平居中（块级元素）</h3>
+                <pre>
+.box {
+  width: 400px; /* 必须设固定宽度 */
+  margin: 0 auto;
+}</pre>
+
+                <h3>2. 水平+垂直居中（弹性布局，万能）</h3>
+                <pre>
+.parent {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  height: 200px; /* 必须设固定高度 */
+}</pre>
+
+                <h3>3. 隐藏元素（两种常用方式）</h3>
+                <pre>
+/* 方式1：消失，不占位置（推荐，如搜索建议框默认隐藏） */
+.box { display: none; }
+/* 方式2：隐藏，仍占位置（少用，如隐藏文字但保留位置） */
+.box { visibility: hidden; }</pre>
+
+                <h3>4. 清除列表默认样式（你的项目左/右侧导航列表）</h3>
+                <pre>
+ul {
+  list-style: none; /* 清除圆点/数字 */
+  margin: 0;
+  padding: 0;
+}</pre>
+
+                <h3>5. 清除链接默认样式（你的项目导航链接）</h3>
+                <pre>
+a {
+  text-decoration: none; /* 清除下划线 */
+  color: inherit; /* 继承父元素文字颜色 */
+}</pre>
+
+                <h3>6. 图片自适应不变形</h3>
+                <pre>
+.img-responsive {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}</pre>
+            </section>
+        </main>
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 回到顶部按钮逻辑
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            // 滚动超过300px显示按钮
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            // 平滑滚动到顶部
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 侧边目录链接平滑滚动
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

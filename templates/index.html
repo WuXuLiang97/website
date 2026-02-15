@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>精品视频网站 - 首页</title>
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+
+  </style>
+</head>
+
+<body>
+  <div class="bili-header">
+    <div class="bili-header__bar">
+      <ul class="left-entry">
+        <li>
+          <a href="/" class="entry-title"> <svg width="32" height="32" viewBox="0 0 18 18" fill="none"
+              xmlns="http://www.w3.org/2000/svg" class="zhuzhan-icon">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M3.73252 2.67094C3.33229 2.28484 3.33229 1.64373 3.73252 1.25764C4.11291 0.890684 4.71552 0.890684 5.09591 1.25764L7.21723 3.30403C7.27749 3.36218 7.32869 3.4261 7.37081 3.49407H10.5789C10.6211 3.4261 10.6723 3.36218 10.7325 3.30403L12.8538 1.25764C13.2342 0.890684 13.8368 0.890684 14.2172 1.25764C14.6175 1.64373 14.6175 2.28484 14.2172 2.67094L13.364 3.49407H14C16.2091 3.49407 18 5.28493 18 7.49407V12.9996C18 15.2087 16.2091 16.9996 14 16.9996H4C1.79086 16.9996 0 15.2087 0 12.9996V7.49406C0 5.28492 1.79086 3.49407 4 3.49407H4.58579L3.73252 2.67094ZM4 5.42343C2.89543 5.42343 2 6.31886 2 7.42343V13.0702C2 14.1748 2.89543 15.0702 4 15.0702H14C15.1046 15.0702 16 14.1748 16 13.0702V7.42343C16 6.31886 15.1046 5.42343 14 5.42343H4ZM5 9.31747C5 8.76519 5.44772 8.31747 6 8.31747C6.55228 8.31747 7 8.76519 7 9.31747V10.2115C7 10.7638 6.55228 11.2115 6 11.2115C5.44772 11.2115 5 10.7638 5 10.2115V9.31747ZM12 8.31747C11.4477 8.31747 11 8.76519 11 9.31747V10.2115C11 10.7638 11.4477 11.2115 12 11.2115C12.5523 11.2115 13 10.7638 13 10.2115V9.31747C13 8.76519 12.5523 8.31747 12 8.31747Z"
+                fill="currentColor"></path>
+            </svg>
+            <span>首页</span>
+          </a>
+        </li>
+        <li class="v-popover-wrap">
+          <a href="/hls" class="default-entry">HLS切片</a>
+        </li>
+
+      </ul>
+      <form action="/search" method="get" class="search-form">
+        <div class="search-box">
+          <input type="text" name="keyword" id="search-input" placeholder="输入动画名称搜索（如：海贼王、火影忍者）..." required
+            autocomplete="off" />
+          <button type="submit" class="search-btn">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            搜索
+          </button>
+        </div>
+        <!-- 搜索建议区域 -->
+        <div id="search-suggestions" class="search-suggestions"></div>
+      </form>
+      <ul class="right-entry" id="user-nav">
+        <li>
+          <a href="/history" class="bili-header__nav-link">播放记录</a>
+        </li>
+        <li>
+          <a href="/login" class="bili-header__nav-link">登录</a>
+        </li>
+        <li>
+          <a href="/register" class="bili-header__nav-link">注册</a>
+        </li>
+      </ul>
+
+    </div>
+
+
+
+  </div>
+  <div class="container">
+    <main class="main-content">
+      <section class="anime-section">
+        <h2>最新视频</h2>
+        <div class="anime-grid">
+          {{range .Animes}}
+          <div class="anime-card">
+            <a href="/play?video={{.VideoURL}}&title={{.Title}}&summary={{.Summary}}&keyword={{.FolderName}}"
+              class="anime-link">
+              <div class="anime-cover">
+                <img src="{{.Cover}}" alt="{{.Title}}" onerror="this.src='/static/css/default-cover.jpg'">
+                <div class="episode-badge">{{.Episodes}}集</div>
+              </div>
+            </a>
+            <a href="/play?video={{.VideoURL}}&title={{.Title}}&summary={{.Summary}}&keyword={{.FolderName}}"
+              class="anime-title-link">
+              <div class="anime-card-title">{{.Title}}</div>
+            </a>
+          </div>
+          {{else}}
+          <div class="no-anime">
+            <p>暂无动画资源，请添加视频文件到 static/videos/ 目录</p>
+          </div>
+          {{end}}
+        </div>
+        <!-- 查看更多/收起按钮 -->
+        <div class="more-section">
+          {{if .Animes}}
+          {{if not .ShowAll}}
+          <!-- 只有当总动画数大于10个时，才显示"查看更多"按钮 -->
+          {{if gt .TotalAnimes 10}}
+          <button id="show-more-btn" class="more-btn">
+            查看更多
+            <svg class="more-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          {{end}}
+          {{else}}
+          <!-- 显示全部时，始终显示"收起"按钮 -->
+          <button id="show-less-btn" class="more-btn">
+            收起
+            <svg class="more-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+          </button>
+          {{end}}
+          {{end}}
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 动画视频网站 | 本网站仅用于学习交流</p>
+    </footer>
+  </div>
+
+  <script>
+    // 检测用户登录状态
+    async function checkLoginStatus() {
+      try {
+        const response = await fetch('/api/auth/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 'success' && data.user) {
+            updateNavForLoggedInUser(data.user);
+          }
+        }
+      } catch (error) {
+        console.error('检查登录状态失败:', error);
+      }
+    }
+
+    // 更新登录状态的导航栏
+    function updateNavForLoggedInUser(user) {
+      const userNav = document.getElementById('user-nav');
+      if (userNav) {
+        userNav.innerHTML = `
+          <li>
+            <a href="/history" class="bili-header__nav-link">播放记录</a>
+          </li>
+          <li class="user-profile">
+            <span class="bili-header__nav-link">欢迎，${user.username}</span>
+          </li>
+          <li>
+            <a href="#" id="logout-btn" class="bili-header__nav-link">登出</a>
+          </li>
+        `;
+
+        // 添加登出按钮事件
+        document.getElementById('logout-btn').addEventListener('click', async function (e) {
+          e.preventDefault();
+          try {
+            const response = await fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              // 登出成功，刷新页面
+              window.location.reload();
+            }
+          } catch (error) {
+            console.error('登出失败:', error);
+          }
+        });
+      }
+    }
+
+    // 处理查看更多按钮点击事件
+    const showMoreBtn = document.getElementById('show-more-btn');
+    if (showMoreBtn) {
+      showMoreBtn.addEventListener('click', () => {
+        // 跳转到带showAll=true参数的首页
+        window.location.href = '/?showAll=true';
+      });
+    }
+
+    // 处理收起按钮点击事件
+    const showLessBtn = document.getElementById('show-less-btn');
+    if (showLessBtn) {
+      showLessBtn.addEventListener('click', () => {
+        // 跳转到不带showAll参数的首页
+        window.location.href = '/';
+      });
+    }
+
+    // Cookie自动续签功能
+    function renewCookie() {
+      fetch('/api/auth/renew', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include' // 包含Cookie
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            console.log('Cookie续签成功');
+          }
+        })
+        .catch(error => {
+          console.error('Cookie续签失败:', error);
+        });
+    }
+
+    // 定期检查Cookie过期时间并续签
+    function checkAndRenewCookie() {
+      // 获取用户Cookie
+      const userCookie = document.cookie.split('; ').find(row => row.startsWith('user='));
+      if (userCookie) {
+        // 这里简化处理，实际项目中可以解析Cookie的过期时间
+        // 每30分钟续签一次
+        renewCookie();
+      }
+    }
+
+    // 页面加载时检查登录状态
+    window.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+    // 每30分钟自动续签Cookie
+    setInterval(checkAndRenewCookie, 30 * 60 * 1000);
+
+    // 当用户有活动时，也触发续签检查
+    document.addEventListener('mousemove', function () {
+      // 防抖处理，避免频繁触发
+      if (!window.lastActivityCheck || Date.now() - window.lastActivityCheck > 5 * 60 * 1000) {
+        checkAndRenewCookie();
+        window.lastActivityCheck = Date.now();
+      }
+    });
+
+    document.addEventListener('keypress', function () {
+      // 防抖处理，避免频繁触发
+      if (!window.lastActivityCheck || Date.now() - window.lastActivityCheck > 5 * 60 * 1000) {
+        checkAndRenewCookie();
+        window.lastActivityCheck = Date.now();
+      }
+    });
+  </script>
+</body>
+
+</html>

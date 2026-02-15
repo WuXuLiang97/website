@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新动画信息 - 动画视频网站</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .update-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .update-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        .btn-secondary {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: #c0392b;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .anime-list {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f5f7fa;
+            border-radius: 8px;
+        }
+        /* 消息反馈样式 */
+        .message {
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .anime-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .anime-item:last-child {
+            border-bottom: none;
+        }
+        .anime-item input[type="radio"] {
+            margin-right: 10px;
+        }
+        .anime-item .anime-info {
+            flex: 1;
+        }
+        .anime-item .anime-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .anime-item .anime-dir {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <h1>更新动画信息</h1>
+            <p>更新数据库中的动画信息</p>
+        </header>
+
+        <main class="main-content">
+            <div class="update-container">
+                <a href="/" class="back-btn">返回首页</a>
+                
+                <!-- 消息反馈区域 -->
+                {{if .Message}}
+                <div class="message {{.MessageType}}">
+                    {{.Message}}
+                </div>
+                {{end}}
+                
+                <div class="anime-list">
+                    <h3>选择要更新的动画：</h3>
+                    <form action="/update" method="post" enctype="multipart/form-data" class="update-form">
+                        <div class="form-group">
+                            {{range .Animes}}
+                            <div class="anime-item">
+                                <input type="radio" name="anime_id" value="{{.ID}}" id="anime-{{.ID}}">
+                                <label for="anime-{{.ID}}">
+                                    <div class="anime-info">
+                                        <div class="anime-title">{{.Title}}</div>
+                                        <div class="anime-dir">目录名：{{.FolderName}}</div>
+                                    </div>
+                                </label>
+                            </div>
+                            {{else}}
+                            <div class="no-anime">
+                                <p>数据库中暂无动画信息</p>
+                            </div>
+                            {{end}}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="title">动画标题：</label>
+                            <input type="text" id="title" name="title" placeholder="输入动画标题">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cover_file">上传封面图片：</label>
+                            <input type="file" id="cover_file" name="cover_file" accept="image/*">
+                            <small>支持JPG、PNG等图片格式，大小不超过10MB</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="summary">简介：</label>
+                            <textarea id="summary" name="summary" placeholder="输入动画简介"></textarea>
+                        </div>
+
+                        <!-- 暂不支持评分更新，因为数据库中可能不存在该字段 -->
+                        <!-- <div class="form-group">
+                            <label for="score">评分：</label>
+                            <input type="text" id="score" name="score" placeholder="输入评分，如：8.5">
+                        </div> -->
+
+                        <div class="form-group">
+                            <label for="episodes">集数：</label>
+                            <input type="number" id="episodes" name="episodes" placeholder="输入集数">
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn-primary">更新信息</button>
+                            <a href="/" class="btn-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="anime-list">
+                    <h3>或批量更新：</h3>
+                    <form action="/update/batch" method="post">
+                        <div class="btn-group">
+                            <button type="submit" class="btn-primary">重新扫描并更新所有动画信息</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <p>© 2026 动画视频网站 | 本网站仅用于学习交流</p>
+        </footer>
+    </div>
+</body>
+</html>

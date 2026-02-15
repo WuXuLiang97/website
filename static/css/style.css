@@ -1,0 +1,1391 @@
+/* ========================== 全局样式重置 ========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+}
+
+body {
+  background-color: #111319;
+  color: #FFFFFF;
+  line-height: 1.6;
+}
+
+/* ========================== 通用容器样式 ========================== */
+.container {
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 20px 80px;
+  width: 100%;
+}
+
+/* ========================== 头部样式 ========================== */
+/* 哔哩哔哩风格头部 */
+.bili-header {
+  position: relative;
+  width: 100%;
+  background: #07080A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  color: #FFFFFF;
+}
+
+.bili-header .bili-header__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  max-width: 2560px;
+  width: 100%;
+  height: 64px;
+  margin: 0 auto;
+  flex-wrap: nowrap;
+}
+
+.bili-header .left-entry {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+
+.bili-header .right-entry {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 20px;
+}
+
+.bili-header .search-form {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.bili-header .search-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.bili-header .search-form input {
+  padding: 10px 15px;
+  font-size: 1rem;
+}
+
+.bili-header .search-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+.bili-header .entry-title {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.bili-header .bili-logo {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.bili-header .default-entry {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.bili-header .left-entry li,
+.bili-header .right-entry li {
+  list-style: none;
+}
+
+.bili-header .bili-header__nav-link {
+  text-decoration: none;
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0 12px;
+}
+
+/* 站点头部 */
+.site-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.site-header h1 {
+  color: #2c3e50;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.site-header p {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* 顶部导航栏 */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-top h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  flex-shrink: 0;
+}
+
+.header-top .header-nav {
+  margin: 0;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.header-top .nav-link {
+  margin: 0;
+  padding: 8px 16px;
+}
+
+/* 头部导航通用 */
+.header-nav {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #fff;
+  color: #3498db;
+  text-decoration: none;
+  border: 1px solid #3498db;
+  border-radius: 20px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: #3498db;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 返回按钮 */
+.back-btn {
+  display: inline-block;
+  position: relative;
+  color: #3498db;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #3498db;
+  margin-right: 10px;
+  margin-bottom: 15px;
+}
+
+.back-btn:hover {
+  background: #3498db;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+/* ========================== 搜索相关样式 ========================== */
+/* 主内容区域 */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* 搜索区域 */
+.search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+}
+
+.search-form {
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+}
+
+.search-box {
+  display: flex;
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-box:focus-within {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.search-form input {
+  flex: 1;
+  padding: 18px 25px;
+  font-size: 1.1rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #D24D5C;
+}
+
+.search-form input::placeholder {
+  color: #999;
+}
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 35px;
+  background: linear-gradient(135deg, #D24D5C, #ECAEB9);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 5px;
+}
+
+.search-btn:hover {
+  background: linear-gradient(135deg, #f4796a, #efeec6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+/* 搜索建议 */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  margin-top: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.search-suggestions.show {
+  display: block;
+}
+
+.search-suggestion-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.search-suggestion-item:hover {
+  background-color: #f8f9fa;
+  padding-left: 25px;
+}
+
+.search-suggestion-item .icon {
+  color: #667eea;
+  font-size: 14px;
+}
+
+/* 搜索历史/热门搜索 */
+.search-history,
+.hot-searches {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 700px;
+}
+
+.search-history h3,
+.hot-searches h3 {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-tag:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================== 动画相关样式 ========================== */
+/* 动画区域 */
+.anime-section {
+  margin-top: 40px;
+}
+
+.anime-section h2 {
+  font-size: 1.8rem;
+  color: #FFFFFF;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ECAEB9;
+}
+
+/* 查看更多按钮 */
+.more-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.more-btn {
+  background-color: #D24D5C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.more-btn:hover {
+  background-color: #ECAEB9;
+}
+
+.more-icon {
+  transition: transform 0.3s ease;
+}
+
+.more-btn:hover .more-icon {
+  transform: translateY(2px);
+}
+
+/* 动画网格 */
+.anime-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 300px);
+  gap: 25px;
+  margin-top: 30px;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+/* 动画卡片 */
+.anime-card {
+  background: inherit;
+  overflow: hidden !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.anime-card:hover {
+  transform: translateY(-5px) !important;
+}
+
+/* 动画封面 */
+.anime-cover {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px !important;
+}
+
+.anime-cover img {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.4s ease !important;
+  max-width: 100% !important;
+  max-height: 200px !important;
+  display: block !important;
+}
+
+.anime-card:hover .anime-cover img {
+  transform: scale(1.08) !important;
+}
+
+/* 集数徽章 */
+.episode-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(255, 107, 107, 0.9);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 动画链接/标题链接 */
+.anime-link,
+.anime-title-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+}
+
+.anime-link {
+  height: 100%;
+}
+
+/* 动画卡片标题 */
+.anime-card-title {
+  font-size: 1.1rem;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+  margin: 0;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.anime-card:hover .anime-card-title {
+  color: #f4796a;
+}
+
+/* 无动画提示 */
+.no-anime {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.no-anime p {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* 摘要 */
+.summary {
+  color: #555;
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.play-btn {
+  display: inline-block;
+  padding: 10px 25px;
+  background-color: #2ecc71;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.play-btn:hover {
+  background-color: #27ae60;
+}
+
+.no-video {
+  display: inline-block;
+  padding: 10px 25px;
+  background-color: #e74c3c;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* 多集视频列表 */
+.episode-list {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.episode-title {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.episode-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #f0f2f5;
+  color: #333;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  margin: 0 5px 8px 0;
+}
+
+.episode-btn:hover {
+  background: #D24D5C;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ========================== 搜索结果样式 ========================== */
+/* 结果头部 */
+.search-result-header {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.header-content {
+  margin-bottom: 20px;
+}
+
+.search-result-info h1 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.result-count {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+.result-search-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 结果容器 */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 结果卡片 */
+.result-card {
+  display: flex;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.result-card-left {
+  width: 300px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.result-cover {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+.result-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.result-card:hover .result-cover img {
+  transform: scale(1.05);
+}
+
+.play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.result-cover:hover .play-overlay {
+  opacity: 1;
+}
+
+.play-icon {
+  color: #fff;
+  stroke-width: 2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.result-card-right {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result-title {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  font-weight: 600;
+  margin: 0;
+}
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #ffb400, #ff8c00);
+  color: #fff;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.result-summary {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.result-actions {
+  margin-top: auto;
+}
+
+.episode-selector h4 {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.episode-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.no-episodes {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* 无结果提示 */
+.no-result {
+  text-align: center;
+  padding: 80px 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.no-result-icon {
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.no-result h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.no-result p {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-btn {
+  display: inline-block;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.home-btn:hover {
+  background: linear-gradient(135deg, #2980b9, #21618c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.retry-search {
+  width: 100%;
+  max-width: 400px;
+}
+
+.retry-search .search-box {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+}
+
+/* ========================== 历史记录样式 ========================== */
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.history-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+/* 通用按钮 */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #4285f4;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #3367d6;
+}
+
+.btn-danger {
+  background-color: #ea4335;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #d3302f;
+}
+
+/* 空历史提示 */
+.empty-history {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.empty-history h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* 历史列表 */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history-item {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.history-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #D24D5C;
+}
+
+.anime-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.episode-info {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+/* 进度条 */
+.progress-container {
+  margin: 10px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #D24D5C;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+}
+
+/* 历史项底部 */
+.history-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.last-played {
+  font-size: 12px;
+  color: #888;
+}
+
+.play-button {
+  background-color: #D24D5C;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.play-button:hover {
+  background-color: #ECAEB9;
+}
+
+.clear-all-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear-all-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* 分组标题 */
+.group-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin: 20px 0 10px 0;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #ECAEB9;
+}
+
+/* 历史统计 */
+.history-stats {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* ========================== 页脚样式 ========================== */
+.site-footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+/* ========================== 响应式适配 (重构版) ========================== */
+/* 基础移动端适配 (768px及以下) */
+@media (max-width: 768px) {
+  /* 1. 全局容器适配 - 修复背景冲突，优化内边距 */
+  .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px 15px; /* 左右保留合理内边距，避免内容贴边 */
+    width: 100%;
+    background: inherit; /* 继承body的深色背景，避免原白色背景冲突 */
+  }
+
+  /* 2. 哔哩哔哩风格头部重构 - 更紧凑的移动端布局 */
+  .bili-header {
+    position: sticky; /* 移动端头部吸顶，提升体验 */
+    top: 0;
+    z-index: 999;
+  }
+
+  .bili-header .bili-header__bar {
+    display: grid;
+    height: 56px; /* 降低头部高度，适配移动端 */
+    padding: 0 12px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .bili-header .left-entry {
+    margin-right: 8px;
+    flex: 0 0 auto;
+  }
+
+  .bili-header .right-entry {
+    margin-left: 8px;
+    flex: 0 0 auto;
+  }
+
+  .bili-header .search-form {
+    flex: 1;
+    min-width: 120px; /* 保证搜索框最小宽度 */
+  }
+
+  .bili-header .search-box {
+    max-width: none;
+  }
+
+  /* 移动端头部文字/按钮优化 */
+  .bili-header .entry-title,
+  .bili-header .default-entry,
+  .bili-header .bili-header__nav-link {
+    font-size: 0.85rem;
+    margin-right: 6px;
+  }
+
+  .bili-header .bili-header__nav-link {
+    padding: 0 8px;
+  }
+
+  /* 搜索框/按钮适配 */
+  .bili-header .search-form input {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .bili-header .search-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    margin: 3px;
+  }
+
+  /* 3. 站点头部适配 */
+  .site-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .site-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .site-header p {
+    font-size: 1rem;
+  }
+
+  /* 4. 顶部导航栏适配 */
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .header-top h1 {
+    font-size: 1.8rem;
+  }
+
+  .header-top .header-nav {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto; /* 导航项过多时横向滚动 */
+    padding-bottom: 5px;
+    gap: 8px;
+  }
+
+  .header-top .nav-link {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    white-space: nowrap; /* 避免导航文字换行 */
+  }
+
+  /* 5. 返回按钮适配 */
+  .back-btn {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    position: static;
+  }
+
+  /* 6. 搜索区域适配 */
+  .search-section {
+    padding: 15px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .search-form input {
+    padding: 12px 18px;
+    font-size: 1rem;
+  }
+
+  .search-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    gap: 4px;
+  }
+
+  /* 搜索历史/热门搜索适配 */
+  .search-history,
+  .hot-searches {
+    padding: 15px;
+    margin-top: 15px;
+  }
+
+  .search-tag {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  /* 7. 动画区域适配 - 更适合移动端的网格 */
+  .anime-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .anime-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); /* 自适应列数，最小宽度更小 */
+    gap: 15px;
+    padding: 0 10px;
+  }
+
+  .anime-cover {
+    height: 146px; /* 按比例缩小封面高度 */
+  }
+
+  .anime-card-title {
+    font-size: 1rem;
+  }
+
+  .episode-badge {
+    padding: 2px 6px;
+    font-size: 0.7rem;
+  }
+
+  /* 8. 搜索结果适配 - 移动端友好的布局 */
+  .search-result-header {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .search-result-info h1 {
+    font-size: 1.5rem;
+  }
+
+  /* 结果卡片改为垂直布局 */
+  .result-card {
+    flex-direction: column;
+  }
+
+  .result-card-left {
+    width: 100%;
+    height: auto;
+  }
+
+  .result-cover {
+    height: 200px; /* 移动端封面高度优化 */
+    border-radius: 8px 8px 0 0;
+  }
+
+  .result-card-right {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .result-title {
+    font-size: 1.2rem;
+  }
+
+  .result-summary {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 4; /* 增加显示行数，提升信息展示 */
+  }
+
+  /* 9. 历史记录页面适配 */
+  .history-container {
+    padding: 10px 15px;
+  }
+
+  .history-header {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .history-title {
+    font-size: 20px;
+  }
+
+  /* 按钮适配 - 增大移动端点击区域 */
+  .btn,
+  .play-button,
+  .clear-all-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    min-height: 44px; /* 符合移动端可点击区域最小尺寸规范 */
+    min-width: 80px;
+  }
+
+  .history-item {
+    padding: 12px;
+  }
+
+  .anime-title {
+    font-size: 16px;
+  }
+
+  /* 10. 无结果/无动画提示适配 */
+  .no-result,
+  .no-anime,
+  .empty-history {
+    padding: 40px 15px;
+  }
+
+  .no-result h2 {
+    font-size: 1.3rem;
+  }
+
+  .no-result p,
+  .no-anime p,
+  .empty-history p {
+    font-size: 1rem;
+  }
+
+  /* 11. 页脚适配 */
+  .site-footer {
+    margin-top: 30px;
+    font-size: 0.85rem;
+    padding: 15px 0;
+  }
+
+  /* 12. 动画播放按钮/集数按钮适配 */
+  .play-btn,
+  .no-video,
+  .episode-btn {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    min-height: 40px;
+  }
+
+  .episode-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* 针对小屏手机的额外适配 (480px及以下) */
+@media (max-width: 480px) {
+  /* 进一步简化头部 */
+  .bili-header .bili-header__bar {
+    height: 50px;
+  }
+
+  /* 隐藏头部非核心导航项 (可选，根据需求调整) */
+  .bili-header .right-entry li:not(:first-child) {
+    display: none;
+  }
+
+  /* 动画网格更紧凑 */
+  .anime-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+  }
+
+  .anime-cover {
+    height: 120px;
+  }
+
+  /* 搜索按钮文字隐藏，只保留图标 (可选) */
+  .search-btn span {
+    display: none;
+  }
+
+  .search-btn {
+    padding: 12px 15px;
+  }
+}
