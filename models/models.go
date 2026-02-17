@@ -33,20 +33,23 @@ type PlayHistory struct {
 }
 
 type AnimeInfo struct {
-	ID         uint      `gorm:"primaryKey" json:"id"`
-	Title      string    `gorm:"size:255" json:"title"`
-	Summary    string    `gorm:"size:1000" json:"summary"`
-	Cover      string    `gorm:"size:255" json:"cover"`
-	VideoURL   string    `gorm:"size:255" json:"video_url"`
-	Episodes   int       `json:"episodes"`
-	FolderName string    `gorm:"size:255" json:"folder_name"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID           uint      `gorm:"primaryKey" json:"id"`
+	Title        string    `gorm:"size:255" json:"title"`
+	Summary      string    `gorm:"size:1000" json:"summary"`
+	Cover        string    `gorm:"size:255" json:"cover"`
+	VideoURL     string    `gorm:"size:255" json:"video_url"`
+	Episodes     int       `json:"episodes"`
+	FolderName   string    `gorm:"size:255" json:"folder_name"`
+	PhysicalPath string    `gorm:"size:500" json:"physical_path"`
+	StorageDisk  string    `gorm:"size:100" json:"storage_disk"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type VideoFile struct {
-	Path     string `json:"path"`
-	FileName string `json:"file_name"`
+	Path         string `json:"path"`
+	FileName     string `json:"file_name"`
+	PhysicalPath string `json:"physical_path"`
 }
 
 type BatchResult struct {

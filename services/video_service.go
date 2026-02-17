@@ -101,6 +101,13 @@ func (s *VideoService) scanAnimeDirectory(animeName string, hlsAnimePath string,
 	defer wg.Done()
 
 	var videos []models.VideoFile
+	var diskName string
+
+	disk := StorageServiceInstance.FindDiskByAnimeName(animeName)
+	if disk != nil {
+		diskName = disk.Name
+	}
+
 	hlsEntries, err := ioutil.ReadDir(hlsAnimePath)
 	if err == nil {
 		for _, hlsEntry := range hlsEntries {
@@ -108,19 +115,23 @@ func (s *VideoService) scanAnimeDirectory(animeName string, hlsAnimePath string,
 				playlistPath := filepath.Join(hlsAnimePath, hlsEntry.Name(), "playlist.m3u8")
 				if _, err := os.Stat(playlistPath); err == nil {
 					var hlsURL string
+					var physicalPath string
+
 					if basePath == hlsDir {
 						hlsURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, hlsEntry.Name(), "playlist.m3u8"}, "/"))
+						physicalPath = playlistPath
+					} else if disk != nil {
+						hlsURL = "/storage/" + disk.Name + "/" + animeName + "/" + hlsEntry.Name() + "/playlist.m3u8"
+						physicalPath = playlistPath
 					} else {
-						disk := StorageServiceInstance.FindDiskByAnimeName(animeName)
-						if disk != nil {
-							hlsURL = "/storage/" + disk.Name + "/" + animeName + "/" + hlsEntry.Name() + "/playlist.m3u8"
-						} else {
-							hlsURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, hlsEntry.Name(), "playlist.m3u8"}, "/"))
-						}
+						hlsURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, hlsEntry.Name(), "playlist.m3u8"}, "/"))
+						physicalPath = playlistPath
 					}
+
 					videos = append(videos, models.VideoFile{
-						Path:     hlsURL,
-						FileName: hlsEntry.Name(),
+						Path:         hlsURL,
+						FileName:     hlsEntry.Name(),
+						PhysicalPath: physicalPath,
 					})
 				}
 			}
@@ -141,25 +152,24 @@ func (s *VideoService) scanAnimeDirectory(animeName string, hlsAnimePath string,
 			if _, err := os.Stat(hlsCoverPath); err == nil {
 				if basePath == hlsDir {
 					coverURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, format}, "/"))
+				} else if disk != nil {
+					coverURL = "/storage/" + disk.Name + "/" + animeName + "/" + format
 				} else {
-					disk := StorageServiceInstance.FindDiskByAnimeName(animeName)
-					if disk != nil {
-						coverURL = "/storage/" + disk.Name + "/" + animeName + "/" + format
-					} else {
-						coverURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, format}, "/"))
-					}
+					coverURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, format}, "/"))
 				}
 				break
 			}
 		}
 
 		anime := models.AnimeInfo{
-			Title:      animeName,
-			Summary:    fmt.Sprintf("这是一部名为 %s 的动画", animeName),
-			Cover:      coverURL,
-			VideoURL:   mainVideo.Path,
-			Episodes:   len(videos),
-			FolderName: animeName,
+			Title:        animeName,
+			Summary:      fmt.Sprintf("这是一部名为 %s 的动画", animeName),
+			Cover:        coverURL,
+			VideoURL:     mainVideo.Path,
+			Episodes:     len(videos),
+			FolderName:   animeName,
+			PhysicalPath: hlsAnimePath,
+			StorageDisk:  diskName,
 		}
 
 		mutex.Lock()
@@ -183,6 +193,8 @@ func (s *VideoService) updateAnimeInfo(anime models.AnimeInfo) {
 		existingAnime.Cover = anime.Cover
 		existingAnime.VideoURL = anime.VideoURL
 		existingAnime.Episodes = anime.Episodes
+		existingAnime.PhysicalPath = anime.PhysicalPath
+		existingAnime.StorageDisk = anime.StorageDisk
 		existingAnime.UpdatedAt = time.Now()
 
 		result = DB.Save(&existingAnime)
@@ -456,8 +468,9 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 
 						if !addedVideos[hlsURL] {
 							videos = append(videos, models.VideoFile{
-								Path:     hlsURL,
-								FileName: hlsFileName,
+								Path:         hlsURL,
+								FileName:     hlsFileName,
+								PhysicalPath: playlistPath,
 							})
 							addedVideos[hlsURL] = true
 						}
@@ -485,8 +498,9 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 
 							if !addedVideos[hlsURL] {
 								videos = append(videos, models.VideoFile{
-									Path:     hlsURL,
-									FileName: hlsFileName,
+									Path:         hlsURL,
+									FileName:     hlsFileName,
+									PhysicalPath: playlistPath,
 								})
 								addedVideos[hlsURL] = true
 							}
@@ -526,6 +540,43 @@ func (s *VideoService) getHLSURL(videoPath string) string {
 	return StorageServiceInstance.GetHLSURL(animeName) + "/playlist.m3u8"
 }
 
+func (s *VideoService) getVideoFilePath(videoPath string) string {
+	normalizedPath := utils.NormalizeURLPath(videoPath)
+
+	if strings.HasPrefix(normalizedPath, "/storage/") {
+		relativePath := strings.TrimPrefix(normalizedPath, "/storage/")
+		pathParts := strings.Split(relativePath, "/")
+		if len(pathParts) >= 2 {
+			diskName := pathParts[0]
+			disk := StorageServiceInstance.GetDiskByName(diskName)
+			if disk != nil {
+				return filepath.Join(disk.Path, strings.Join(pathParts[1:], string(filepath.Separator)))
+			}
+		}
+		return filepath.FromSlash(strings.TrimPrefix(normalizedPath, "/"))
+	}
+
+	videoFilePath := strings.TrimPrefix(normalizedPath, "/")
+	return filepath.FromSlash(videoFilePath)
+}
+
+func (s *VideoService) GenerateHLSFromPhysicalPath(videoURL string, physicalPath string, storageDisk string) string {
+	if physicalPath == "" {
+		return s.GetHLSURL(videoURL)
+	}
+
+	animeName := filepath.Base(physicalPath)
+
+	if storageDisk != "" {
+		disk := StorageServiceInstance.GetDiskByName(storageDisk)
+		if disk != nil {
+			return "/storage/" + disk.Name + "/" + animeName + "/playlist.m3u8"
+		}
+	}
+
+	return "/hls/" + animeName + "/playlist.m3u8"
+}
+
 func (s *VideoService) GenerateHLS(videoPath string) error {
 	hlsDirPath := s.getHLSDir(videoPath)
 
@@ -537,8 +588,7 @@ func (s *VideoService) GenerateHLS(videoPath string) error {
 	playlistPath := filepath.Join(hlsDirPath, "playlist.m3u8")
 	segmentPath := filepath.Join(hlsDirPath, "segment_%03d.ts")
 
-	videoFilePath := strings.TrimPrefix(utils.NormalizeURLPath(videoPath), "/")
-	videoFilePath = filepath.FromSlash(videoFilePath)
+	videoFilePath := s.getVideoFilePath(videoPath)
 
 	cmd := exec.Command(
 		"ffmpeg",
@@ -585,8 +635,7 @@ func (s *VideoService) GenerateHLSHighQuality(videoPath string) error {
 	playlistPath := filepath.Join(hlsDirPath, "playlist.m3u8")
 	segmentPath := filepath.Join(hlsDirPath, "segment_%03d.ts")
 
-	videoFilePath := strings.TrimPrefix(utils.NormalizeURLPath(videoPath), "/")
-	videoFilePath = filepath.FromSlash(videoFilePath)
+	videoFilePath := s.getVideoFilePath(videoPath)
 
 	cmd := exec.Command(
 		"ffmpeg",

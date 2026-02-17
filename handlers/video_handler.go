@@ -107,35 +107,9 @@ func (h *VideoHandler) Play(c *gin.Context) {
 		return
 	}
 
-	if keyword == "" {
-		pathParts := strings.Split(videoURL, "/")
-		var staticIndex int = -1
-		for i, part := range pathParts {
-			if part == "static" {
-				staticIndex = i
-				break
-			}
-		}
-		log.Printf("staticIndex: %d", staticIndex)
-
-		if staticIndex != -1 && len(pathParts) >= staticIndex+3 {
-			log.Printf("找到static部分，检查后面的路径")
-			if pathParts[staticIndex+1] == "videos" {
-				keyword = pathParts[staticIndex+2]
-				log.Printf("从videos路径提取的keyword: %s", keyword)
-			} else if pathParts[staticIndex+1] == "hls" {
-				keyword = pathParts[staticIndex+2]
-				log.Printf("从hls路径提取的keyword: %s", keyword)
-			}
-		} else {
-			log.Printf("无法从videoURL中提取keyword，staticIndex=%d, len(pathParts)=%d", staticIndex, len(pathParts))
-		}
-	}
-
-	log.Printf("最终的keyword: %s", keyword)
-
 	var anime models.AnimeInfo
 	var found bool
+
 	if keyword != "" {
 		log.Printf("使用keyword '%s' 获取动画信息", keyword)
 		anime, found = h.videoService.GetAnimeInfo(keyword)
@@ -146,8 +120,6 @@ func (h *VideoHandler) Play(c *gin.Context) {
 		} else {
 			log.Printf("未找到动画信息")
 		}
-	} else {
-		log.Printf("keyword为空，无法获取动画信息")
 	}
 
 	var videoList []models.VideoFile
@@ -155,12 +127,18 @@ func (h *VideoHandler) Play(c *gin.Context) {
 		log.Printf("使用keyword '%s' 获取视频列表", keyword)
 		videoList = h.videoService.GetAnimeVideos(keyword)
 		log.Printf("获取到 %d 个视频文件", len(videoList))
-	} else {
-		log.Printf("keyword为空，无法获取视频列表")
 	}
 
-	if !strings.Contains(videoURL, "/hls/") && utils.IsVideoFile(videoURL, allowedFormats) {
-		hlsPath := h.videoService.GetHLSURL(videoURL)
+	if !strings.Contains(videoURL, ".m3u8") && utils.IsVideoFile(videoURL, allowedFormats) {
+		log.Printf("视频URL不是HLS格式，需要生成HLS: %s", videoURL)
+
+		var hlsPath string
+		if found && anime.PhysicalPath != "" {
+			hlsPath = h.videoService.GenerateHLSFromPhysicalPath(videoURL, anime.PhysicalPath, anime.StorageDisk)
+		} else {
+			hlsPath = h.videoService.GetHLSURL(videoURL)
+		}
+
 		hlsFilePath := strings.TrimPrefix(hlsPath, "/")
 		hlsFilePath = filepath.FromSlash(hlsFilePath)
 
@@ -175,6 +153,7 @@ func (h *VideoHandler) Play(c *gin.Context) {
 			}
 		} else {
 			videoURL = hlsPath
+			log.Printf("使用已存在的HLS文件: %s\n", hlsPath)
 		}
 	}
 
