@@ -11,6 +11,7 @@ type Config struct {
 	Server   ServerConfig   `json:"server"`
 	Database DatabaseConfig `json:"database"`
 	Log      LogConfig      `json:"log"`
+	Storage  StorageConfig  `json:"storage"`
 }
 
 type ServerConfig struct {
@@ -23,6 +24,20 @@ type DatabaseConfig struct {
 
 type LogConfig struct {
 	Level string `json:"level"`
+}
+
+type StorageConfig struct {
+	DefaultDisk string       `json:"defaultDisk"`
+	Strategy    string       `json:"strategy"`
+	Disks       []DiskConfig `json:"disks"`
+}
+
+type DiskConfig struct {
+	Name      string `json:"name"`
+	Path      string `json:"path"`
+	MaxSizeGB int    `json:"maxSizeGB"`
+	Priority  int    `json:"priority"`
+	Enabled   bool   `json:"enabled"`
 }
 
 var GlobalConfig Config
@@ -42,6 +57,19 @@ func Init() {
 			Log: LogConfig{
 				Level: "info",
 			},
+			Storage: StorageConfig{
+				DefaultDisk: "disk1",
+				Strategy:    "least-used",
+				Disks: []DiskConfig{
+					{
+						Name:      "disk1",
+						Path:      "E:/website/static/hls",
+						MaxSizeGB: 500,
+						Priority:  1,
+						Enabled:   true,
+					},
+				},
+			},
 		}
 	} else {
 		err = json.Unmarshal(content, &GlobalConfig)
@@ -56,6 +84,19 @@ func Init() {
 				},
 				Log: LogConfig{
 					Level: "info",
+				},
+				Storage: StorageConfig{
+					DefaultDisk: "disk1",
+					Strategy:    "least-used",
+					Disks: []DiskConfig{
+						{
+							Name:      "disk1",
+							Path:      "E:/website/static/hls",
+							MaxSizeGB: 500,
+							Priority:  1,
+							Enabled:   true,
+						},
+					},
 				},
 			}
 		}

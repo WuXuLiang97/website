@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"anime-website/models"
+
+	"gorm.io/gorm"
 )
 
 type PlayHistoryService struct{}
@@ -41,7 +43,7 @@ func (s *PlayHistoryService) SavePlayHistory(userID uint, req *PlayHistoryReques
 			history.UpdatedAt = time.Now()
 
 			DB.Save(&history)
-		} else if result.Error == nil {
+		} else if result.Error == gorm.ErrRecordNotFound {
 			history = models.PlayHistory{
 				UserID:        userID,
 				VideoID:       req.VideoID,
@@ -110,7 +112,7 @@ func (s *PlayHistoryService) GetPlayHistory(userID uint, videoID string) (*model
 	if !LocalMode && DB != nil {
 		result := DB.Where("video_id = ? AND user_id = ?", videoID, userID).First(&history)
 		if result.Error != nil {
-			if result.Error == nil {
+			if result.Error == gorm.ErrRecordNotFound {
 				return nil, nil
 			}
 			log.Printf("错误: 查询播放记录失败: %v\n", result.Error)

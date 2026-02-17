@@ -107,14 +107,8 @@ func (h *VideoHandler) Play(c *gin.Context) {
 		return
 	}
 
-	videoURL = utils.NormalizeURLPath(videoURL)
-	log.Printf("标准化后的videoURL: %s", videoURL)
-
 	if keyword == "" {
-		log.Printf("keyword为空，尝试从videoURL中提取")
-		pathParts := strings.Split(strings.TrimPrefix(videoURL, "/"), "/")
-		log.Printf("pathParts: %v", pathParts)
-
+		pathParts := strings.Split(videoURL, "/")
 		var staticIndex int = -1
 		for i, part := range pathParts {
 			if part == "static" {

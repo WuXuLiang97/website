@@ -47,77 +47,44 @@ func (s *VideoService) ScanVideos() []models.AnimeInfo {
 		err = os.MkdirAll(hlsDir, 0755)
 		if err != nil {
 			log.Printf("错误: 创建HLS目录失败: %v\n", err)
-			return animes
 		}
 	}
 
-	entries, err := ioutil.ReadDir(hlsDir)
-	if err != nil {
-		log.Printf("错误: 扫描HLS目录失败: %v\n", err)
-		return animes
-	}
+	disks := StorageServiceInstance.GetAllDisks()
+	if len(disks) == 0 {
+		entries, err := ioutil.ReadDir(hlsDir)
+		if err != nil {
+			log.Printf("错误: 扫描HLS目录失败: %v\n", err)
+			return animes
+		}
 
-	for _, entry := range entries {
-		if entry.IsDir() {
-			animeName := entry.Name()
-			hlsAnimePath := filepath.Join(hlsDir, animeName)
+		for _, entry := range entries {
+			if entry.IsDir() {
+				animeName := entry.Name()
+				hlsAnimePath := filepath.Join(hlsDir, animeName)
+				wg.Add(1)
+				go s.scanAnimeDirectory(animeName, hlsAnimePath, hlsDir, &mutex, &wg, &animes)
+			}
+		}
+	} else {
+		for _, disk := range disks {
+			if !disk.Enabled {
+				continue
+			}
+			entries, err := ioutil.ReadDir(disk.Path)
+			if err != nil {
+				log.Printf("警告: 扫描磁盘 %s 失败: %v\n", disk.Name, err)
+				continue
+			}
 
-			wg.Add(1)
-			go func(name string, hlsFolder string) {
-				defer wg.Done()
-
-				var videos []models.VideoFile
-				hlsEntries, err := ioutil.ReadDir(hlsFolder)
-				if err == nil {
-					for _, hlsEntry := range hlsEntries {
-						if hlsEntry.IsDir() {
-							playlistPath := filepath.Join(hlsFolder, hlsEntry.Name(), "playlist.m3u8")
-							if _, err := os.Stat(playlistPath); err == nil {
-								hlsURL := utils.NormalizeURLPath(strings.Join([]string{"/hls", name, hlsEntry.Name(), "playlist.m3u8"}, "/"))
-								videos = append(videos, models.VideoFile{
-									Path:     hlsURL,
-									FileName: hlsEntry.Name(),
-								})
-							}
-						}
-					}
+			for _, entry := range entries {
+				if entry.IsDir() {
+					animeName := entry.Name()
+					hlsAnimePath := filepath.Join(disk.Path, animeName)
+					wg.Add(1)
+					go s.scanAnimeDirectory(animeName, hlsAnimePath, disk.Path, &mutex, &wg, &animes)
 				}
-
-				if len(videos) > 0 {
-					sort.Slice(videos, func(i, j int) bool {
-						return videos[i].FileName < videos[j].FileName
-					})
-
-					mainVideo := videos[0]
-					coverURL := "/static/css/default-cover.jpg"
-					coverFormats := []string{"cover.jpg", "cover.png", "cover.jpeg", "cover.webp"}
-
-					for _, format := range coverFormats {
-						hlsCoverPath := filepath.Join(hlsDir, name, format)
-						if _, err := os.Stat(hlsCoverPath); err == nil {
-							coverURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", name, format}, "/"))
-							break
-						}
-					}
-
-					anime := models.AnimeInfo{
-						Title:      name,
-						Summary:    fmt.Sprintf("这是一部名为 %s 的动画", name),
-						Cover:      coverURL,
-						VideoURL:   mainVideo.Path,
-						Episodes:   len(videos),
-						FolderName: name,
-					}
-
-					mutex.Lock()
-					animes = append(animes, anime)
-					mutex.Unlock()
-
-					if !LocalMode {
-						s.updateAnimeInfo(anime)
-					}
-				}
-			}(animeName, hlsAnimePath)
+			}
 		}
 	}
 
@@ -128,6 +95,81 @@ func (s *VideoService) ScanVideos() []models.AnimeInfo {
 	})
 
 	return animes
+}
+
+func (s *VideoService) scanAnimeDirectory(animeName string, hlsAnimePath string, basePath string, mutex *sync.Mutex, wg *sync.WaitGroup, animes *[]models.AnimeInfo) {
+	defer wg.Done()
+
+	var videos []models.VideoFile
+	hlsEntries, err := ioutil.ReadDir(hlsAnimePath)
+	if err == nil {
+		for _, hlsEntry := range hlsEntries {
+			if hlsEntry.IsDir() {
+				playlistPath := filepath.Join(hlsAnimePath, hlsEntry.Name(), "playlist.m3u8")
+				if _, err := os.Stat(playlistPath); err == nil {
+					var hlsURL string
+					if basePath == hlsDir {
+						hlsURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, hlsEntry.Name(), "playlist.m3u8"}, "/"))
+					} else {
+						disk := StorageServiceInstance.FindDiskByAnimeName(animeName)
+						if disk != nil {
+							hlsURL = "/storage/" + disk.Name + "/" + animeName + "/" + hlsEntry.Name() + "/playlist.m3u8"
+						} else {
+							hlsURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, hlsEntry.Name(), "playlist.m3u8"}, "/"))
+						}
+					}
+					videos = append(videos, models.VideoFile{
+						Path:     hlsURL,
+						FileName: hlsEntry.Name(),
+					})
+				}
+			}
+		}
+	}
+
+	if len(videos) > 0 {
+		sort.Slice(videos, func(i, j int) bool {
+			return videos[i].FileName < videos[j].FileName
+		})
+
+		mainVideo := videos[0]
+		coverURL := "/static/css/default-cover.jpg"
+		coverFormats := []string{"cover.jpg", "cover.png", "cover.jpeg", "cover.webp"}
+
+		for _, format := range coverFormats {
+			hlsCoverPath := filepath.Join(basePath, animeName, format)
+			if _, err := os.Stat(hlsCoverPath); err == nil {
+				if basePath == hlsDir {
+					coverURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, format}, "/"))
+				} else {
+					disk := StorageServiceInstance.FindDiskByAnimeName(animeName)
+					if disk != nil {
+						coverURL = "/storage/" + disk.Name + "/" + animeName + "/" + format
+					} else {
+						coverURL = utils.NormalizeURLPath(strings.Join([]string{"/hls", animeName, format}, "/"))
+					}
+				}
+				break
+			}
+		}
+
+		anime := models.AnimeInfo{
+			Title:      animeName,
+			Summary:    fmt.Sprintf("这是一部名为 %s 的动画", animeName),
+			Cover:      coverURL,
+			VideoURL:   mainVideo.Path,
+			Episodes:   len(videos),
+			FolderName: animeName,
+		}
+
+		mutex.Lock()
+		*animes = append(*animes, anime)
+		mutex.Unlock()
+
+		if !LocalMode {
+			s.updateAnimeInfo(anime)
+		}
+	}
 }
 
 func (s *VideoService) updateAnimeInfo(anime models.AnimeInfo) {
@@ -189,6 +231,25 @@ func (s *VideoService) GetAnimesFromDB() []models.AnimeInfo {
 				if _, err := os.Stat(coverPath); err == nil {
 					coverURL = utils.NormalizeURLPath(strings.Join([]string{"/", videosDir, animes[i].FolderName, format}, "/"))
 					break
+				}
+			}
+
+			if coverURL == "/static/css/default-cover.jpg" {
+				disks := StorageServiceInstance.GetAllDisks()
+				for _, disk := range disks {
+					if !disk.Enabled {
+						continue
+					}
+					for _, format := range coverFormats {
+						diskCoverPath := filepath.Join(disk.Path, animes[i].FolderName, format)
+						if _, err := os.Stat(diskCoverPath); err == nil {
+							coverURL = "/storage/" + disk.Name + "/" + animes[i].FolderName + "/" + format
+							break
+						}
+					}
+					if coverURL != "/static/css/default-cover.jpg" {
+						break
+					}
 				}
 			}
 
@@ -285,6 +346,34 @@ func (s *VideoService) GetAnimeInfo(folderName string) (models.AnimeInfo, bool) 
 		} else {
 			log.Printf("HLS文件夹不存在: %s, 错误: %v\n", hlsFolder, err)
 		}
+
+		disks := StorageServiceInstance.GetAllDisks()
+		for _, disk := range disks {
+			if !disk.Enabled {
+				continue
+			}
+			diskHlsPath := filepath.Join(disk.Path, folderName)
+			if _, err := os.Stat(diskHlsPath); err == nil {
+				log.Printf("磁盘 %s HLS文件夹存在，开始扫描: %s\n", disk.Name, diskHlsPath)
+				hlsEntries, err := ioutil.ReadDir(diskHlsPath)
+				if err == nil {
+					for _, entry := range hlsEntries {
+						if entry.IsDir() {
+							playlistPath := filepath.Join(diskHlsPath, entry.Name(), "playlist.m3u8")
+							if _, err := os.Stat(playlistPath); err == nil {
+								hlsURL := "/storage/" + disk.Name + "/" + folderName + "/" + entry.Name() + "/playlist.m3u8"
+								videos = append(videos, models.VideoFile{
+									Path:     hlsURL,
+									FileName: entry.Name(),
+								})
+								hasVideoFiles = true
+								log.Printf("找到视频文件: %s, URL: %s\n", entry.Name(), hlsURL)
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	if hasVideoFiles && len(videos) > 0 {
@@ -306,6 +395,25 @@ func (s *VideoService) GetAnimeInfo(folderName string) (models.AnimeInfo, bool) 
 			if _, err := os.Stat(coverPath); err == nil {
 				coverURL = utils.NormalizeURLPath(strings.Join([]string{"/", videosDir, folderName, format}, "/"))
 				break
+			}
+		}
+
+		if coverURL == "/static/css/default-cover.jpg" {
+			disks := StorageServiceInstance.GetAllDisks()
+			for _, disk := range disks {
+				if !disk.Enabled {
+					continue
+				}
+				for _, format := range coverFormats {
+					diskCoverPath := filepath.Join(disk.Path, folderName, format)
+					if _, err := os.Stat(diskCoverPath); err == nil {
+						coverURL = "/storage/" + disk.Name + "/" + folderName + "/" + format
+						break
+					}
+				}
+				if coverURL != "/static/css/default-cover.jpg" {
+					break
+				}
 			}
 		}
 
@@ -385,6 +493,36 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 		}
 	}
 
+	disks := StorageServiceInstance.GetAllDisks()
+	for _, disk := range disks {
+		if !disk.Enabled {
+			continue
+		}
+		diskHlsPath := filepath.Join(disk.Path, folderName)
+		if _, err := os.Stat(diskHlsPath); err == nil {
+			hlsEntries, err := ioutil.ReadDir(diskHlsPath)
+			if err == nil {
+				for _, entry := range hlsEntries {
+					if entry.IsDir() {
+						playlistPath := filepath.Join(diskHlsPath, entry.Name(), "playlist.m3u8")
+						if _, err := os.Stat(playlistPath); err == nil {
+							hlsURL := "/storage/" + disk.Name + "/" + folderName + "/" + entry.Name() + "/playlist.m3u8"
+							hlsFileName := entry.Name()
+
+							if !addedVideos[hlsURL] {
+								videos = append(videos, models.VideoFile{
+									Path:     hlsURL,
+									FileName: hlsFileName,
+								})
+								addedVideos[hlsURL] = true
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	sort.Slice(videos, func(i, j int) bool {
 		return videos[i].FileName < videos[j].FileName
 	})
@@ -395,17 +533,23 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 func (s *VideoService) getHLSDir(videoPath string) string {
 	normalizedPath := utils.NormalizeURLPath(videoPath)
 	relativePath := strings.TrimPrefix(normalizedPath, "/static/videos/")
-	baseName := strings.TrimSuffix(relativePath, filepath.Ext(relativePath))
-	hlsDirPath := filepath.Join(hlsDir, baseName)
-	return hlsDirPath
+	pathParts := strings.Split(relativePath, "/")
+	if len(pathParts) < 1 {
+		return filepath.Join(hlsDir, filepath.Base(relativePath))
+	}
+	animeName := pathParts[0]
+	return StorageServiceInstance.GetHLSPath(animeName)
 }
 
 func (s *VideoService) getHLSURL(videoPath string) string {
 	normalizedPath := utils.NormalizeURLPath(videoPath)
 	relativePath := strings.TrimPrefix(normalizedPath, "/static/videos/")
-	baseName := strings.TrimSuffix(relativePath, filepath.Ext(relativePath))
-	hlsURL := utils.NormalizeURLPath(strings.Join([]string{"/hls", baseName, "playlist.m3u8"}, "/"))
-	return hlsURL
+	pathParts := strings.Split(relativePath, "/")
+	if len(pathParts) < 1 {
+		return utils.NormalizeURLPath(strings.Join([]string{"/hls", filepath.Base(relativePath), "playlist.m3u8"}, "/"))
+	}
+	animeName := pathParts[0]
+	return StorageServiceInstance.GetHLSURL(animeName) + "/playlist.m3u8"
 }
 
 func (s *VideoService) GenerateHLS(videoPath string) error {
@@ -642,7 +786,7 @@ func (s *VideoService) moveCoverToHLS(videoPath string) {
 		return
 	}
 
-	hlsDirPath := filepath.Join(hlsDir, animeTitle)
+	hlsDirPath := StorageServiceInstance.GetHLSPath(animeTitle)
 
 	if err := os.MkdirAll(hlsDirPath, 0755); err != nil {
 		log.Printf("警告: 创建HLS目录失败: %v\n", err)

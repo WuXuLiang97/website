@@ -1,0 +1,31 @@
+{
+  "server": {
+    "port": 5020
+  },
+  "database": {
+    "dsn": "root:Wxl111222@tcp(localhost:3306)/videos_website_db?charset=utf8mb4&parseTime=True&loc=Local"
+  },
+  "log": {
+    "level": "info"
+  },
+  "storage": {
+    "defaultDisk": "disk1",
+    "strategy": "least-used",
+    "disks": [
+      {
+        "name": "disk1",
+        "path": "E:/website/static/hls",
+        "maxSizeGB": 500,
+        "priority": 1,
+        "enabled": true
+      },
+      {
+        "name": "disk2",
+        "path": "D:/anime/hls",
+        "maxSizeGB": 240,
+        "priority": 2,
+        "enabled": true
+      }
+    ]
+  }
+}

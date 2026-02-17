@@ -29,6 +29,8 @@ func main() {
 
 	services.InitDB()
 
+	services.StorageServiceInstance.Init()
+
 	if _, err := os.Stat(hlsDir); os.IsNotExist(err) {
 		logger.Printf("创建HLS目录: %s\n", hlsDir)
 		err = os.MkdirAll(hlsDir, 0755)
@@ -84,6 +86,14 @@ func main() {
 	r.GET("/hls-fix", videoHandler.HLSFix)
 	r.GET("/login", videoHandler.LoginPage)
 	r.GET("/register", videoHandler.RegisterPage)
+
+	disks := cfg.Storage.Disks
+	for _, disk := range disks {
+		if disk.Enabled {
+			r.Static("/storage/"+disk.Name, disk.Path)
+			logger.Printf("添加存储路由: /storage/%s -> %s\n", disk.Name, disk.Path)
+		}
+	}
 
 	port := cfg.Server.Port
 	listenAddr := fmt.Sprintf("[::]:%d", port)
