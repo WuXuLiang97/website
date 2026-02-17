@@ -116,7 +116,7 @@ func (h *VideoHandler) Play(c *gin.Context) {
 		if found {
 			title = anime.Title
 			summary = anime.Summary
-			log.Printf("获取到动画信息: Title=%s, Summary=%s", title, summary)
+			log.Printf("获取到动画信息: Title=%s, Summary=%s, PhysicalPath=%s, StorageDisk=%s", title, summary, anime.PhysicalPath, anime.StorageDisk)
 		} else {
 			log.Printf("未找到动画信息")
 		}
@@ -129,21 +129,26 @@ func (h *VideoHandler) Play(c *gin.Context) {
 		log.Printf("获取到 %d 个视频文件", len(videoList))
 	}
 
+	log.Printf("检查videoURL是否为HLS格式: %s", videoURL)
+
 	if !strings.Contains(videoURL, ".m3u8") && utils.IsVideoFile(videoURL, allowedFormats) {
 		log.Printf("视频URL不是HLS格式，需要生成HLS: %s", videoURL)
 
 		var hlsPath string
 		if found && anime.PhysicalPath != "" {
 			hlsPath = h.videoService.GenerateHLSFromPhysicalPath(videoURL, anime.PhysicalPath, anime.StorageDisk)
+			log.Printf("使用物理路径生成HLS URL: %s", hlsPath)
 		} else {
 			hlsPath = h.videoService.GetHLSURL(videoURL)
+			log.Printf("使用默认方式生成HLS URL: %s", hlsPath)
 		}
 
 		hlsFilePath := strings.TrimPrefix(hlsPath, "/")
 		hlsFilePath = filepath.FromSlash(hlsFilePath)
+		log.Printf("HLS文件物理路径: %s", hlsFilePath)
 
 		if _, err := os.Stat(hlsFilePath); os.IsNotExist(err) {
-			log.Printf("生成HLS切片: %s\n", videoURL)
+			log.Printf("HLS文件不存在，开始生成: %s\n", videoURL)
 			err = h.videoService.GenerateHLSHighQuality(videoURL)
 			if err == nil {
 				videoURL = hlsPath
@@ -155,8 +160,42 @@ func (h *VideoHandler) Play(c *gin.Context) {
 			videoURL = hlsPath
 			log.Printf("使用已存在的HLS文件: %s\n", hlsPath)
 		}
+	} else if strings.Contains(videoURL, ".m3u8") {
+		log.Printf("videoURL已经是HLS格式，直接使用: %s", videoURL)
+
+		if strings.HasPrefix(videoURL, "/storage/") {
+			relativePath := strings.TrimPrefix(videoURL, "/storage/")
+			pathParts := strings.Split(relativePath, "/")
+			if len(pathParts) >= 2 {
+				diskName := pathParts[0]
+				disk := services.StorageServiceInstance.GetDiskByName(diskName)
+				if disk != nil {
+					physicalPath := filepath.Join(disk.Path, strings.Join(pathParts[1:], string(filepath.Separator)))
+					log.Printf("HLS文件物理路径: %s", physicalPath)
+
+					if _, err := os.Stat(physicalPath); os.IsNotExist(err) {
+						log.Printf("警告: HLS文件不存在: %s", physicalPath)
+					} else {
+						log.Printf("HLS文件存在，可以使用")
+					}
+				} else {
+					log.Printf("警告: 找不到磁盘: %s", diskName)
+				}
+			}
+		} else {
+			hlsFilePath := strings.TrimPrefix(videoURL, "/")
+			hlsFilePath = filepath.FromSlash(hlsFilePath)
+			log.Printf("HLS文件物理路径: %s", hlsFilePath)
+
+			if _, err := os.Stat(hlsFilePath); os.IsNotExist(err) {
+				log.Printf("警告: HLS文件不存在: %s", hlsFilePath)
+			} else {
+				log.Printf("HLS文件存在，可以使用")
+			}
+		}
 	}
 
+	log.Printf("最终使用的VideoURL: %s", videoURL)
 	log.Printf("准备渲染模板，VideoList长度: %d", len(videoList))
 
 	c.HTML(http.StatusOK, "play.html", gin.H{

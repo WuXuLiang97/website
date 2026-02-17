@@ -455,45 +455,17 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 	var videos []models.VideoFile
 	addedVideos := make(map[string]bool)
 
-	hlsAnimePath := filepath.Join(hlsDir, folderName)
-	if _, err := os.Stat(hlsAnimePath); err == nil {
-		hlsEntries, err := ioutil.ReadDir(hlsAnimePath)
-		if err == nil {
-			for _, entry := range hlsEntries {
-				if entry.IsDir() {
-					playlistPath := filepath.Join(hlsAnimePath, entry.Name(), "playlist.m3u8")
-					if _, err := os.Stat(playlistPath); err == nil {
-						hlsURL := utils.NormalizeURLPath(strings.Join([]string{"/hls", folderName, entry.Name(), "playlist.m3u8"}, "/"))
-						hlsFileName := entry.Name()
-
-						if !addedVideos[hlsURL] {
-							videos = append(videos, models.VideoFile{
-								Path:         hlsURL,
-								FileName:     hlsFileName,
-								PhysicalPath: playlistPath,
-							})
-							addedVideos[hlsURL] = true
-						}
-					}
-				}
-			}
-		}
-	}
-
 	disks := StorageServiceInstance.GetAllDisks()
-	for _, disk := range disks {
-		if !disk.Enabled {
-			continue
-		}
-		diskHlsPath := filepath.Join(disk.Path, folderName)
-		if _, err := os.Stat(diskHlsPath); err == nil {
-			hlsEntries, err := ioutil.ReadDir(diskHlsPath)
+	if len(disks) == 0 {
+		hlsAnimePath := filepath.Join(hlsDir, folderName)
+		if _, err := os.Stat(hlsAnimePath); err == nil {
+			hlsEntries, err := ioutil.ReadDir(hlsAnimePath)
 			if err == nil {
 				for _, entry := range hlsEntries {
 					if entry.IsDir() {
-						playlistPath := filepath.Join(diskHlsPath, entry.Name(), "playlist.m3u8")
+						playlistPath := filepath.Join(hlsAnimePath, entry.Name(), "playlist.m3u8")
 						if _, err := os.Stat(playlistPath); err == nil {
-							hlsURL := "/storage/" + disk.Name + "/" + folderName + "/" + entry.Name() + "/playlist.m3u8"
+							hlsURL := utils.NormalizeURLPath(strings.Join([]string{"/hls", folderName, entry.Name(), "playlist.m3u8"}, "/"))
 							hlsFileName := entry.Name()
 
 							if !addedVideos[hlsURL] {
@@ -503,6 +475,36 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 									PhysicalPath: playlistPath,
 								})
 								addedVideos[hlsURL] = true
+							}
+						}
+					}
+				}
+			}
+		}
+	} else {
+		for _, disk := range disks {
+			if !disk.Enabled {
+				continue
+			}
+			diskHlsPath := filepath.Join(disk.Path, folderName)
+			if _, err := os.Stat(diskHlsPath); err == nil {
+				hlsEntries, err := ioutil.ReadDir(diskHlsPath)
+				if err == nil {
+					for _, entry := range hlsEntries {
+						if entry.IsDir() {
+							playlistPath := filepath.Join(diskHlsPath, entry.Name(), "playlist.m3u8")
+							if _, err := os.Stat(playlistPath); err == nil {
+								hlsURL := "/storage/" + disk.Name + "/" + folderName + "/" + entry.Name() + "/playlist.m3u8"
+								hlsFileName := entry.Name()
+
+								if !addedVideos[hlsURL] {
+									videos = append(videos, models.VideoFile{
+										Path:         hlsURL,
+										FileName:     hlsFileName,
+										PhysicalPath: playlistPath,
+									})
+									addedVideos[hlsURL] = true
+								}
 							}
 						}
 					}
