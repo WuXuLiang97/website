@@ -14,6 +14,8 @@ import (
 
 	"anime-website/models"
 	"anime-website/utils"
+
+	"gorm.io/gorm"
 )
 
 const (
@@ -133,6 +135,7 @@ func (s *VideoService) updateAnimeInfo(anime models.AnimeInfo) {
 	result := DB.Where("folder_name = ?", anime.FolderName).First(&existingAnime)
 
 	if result.Error == nil {
+		log.Printf("更新动画信息: %s\n", anime.FolderName)
 		existingAnime.Title = anime.Title
 		existingAnime.Summary = anime.Summary
 		existingAnime.Cover = anime.Cover
@@ -143,14 +146,19 @@ func (s *VideoService) updateAnimeInfo(anime models.AnimeInfo) {
 		result = DB.Save(&existingAnime)
 		if result.Error != nil {
 			log.Printf("错误: 更新动画信息失败: %v\n", result.Error)
+		} else {
+			log.Printf("成功更新动画信息: %s\n", anime.FolderName)
 		}
-	} else if result.Error == nil {
+	} else if result.Error == gorm.ErrRecordNotFound {
+		log.Printf("创建新动画: %s\n", anime.FolderName)
 		anime.CreatedAt = time.Now()
 		anime.UpdatedAt = time.Now()
 
 		result = DB.Create(&anime)
 		if result.Error != nil {
 			log.Printf("错误: 创建动画信息失败: %v\n", result.Error)
+		} else {
+			log.Printf("成功创建动画信息: %s\n", anime.FolderName)
 		}
 	} else {
 		log.Printf("错误: 查询动画信息失败: %v\n", result.Error)
@@ -249,10 +257,13 @@ func (s *VideoService) GetAnimeInfo(folderName string) (models.AnimeInfo, bool) 
 	}
 
 	hlsFolder := filepath.Join(hlsDir, folderName)
+	log.Printf("检查HLS文件夹: %s, hasVideoFiles=%v\n", hlsFolder, hasVideoFiles)
 	if !hasVideoFiles {
 		if _, err := os.Stat(hlsFolder); err == nil {
+			log.Printf("HLS文件夹存在，开始扫描: %s\n", hlsFolder)
 			hlsEntries, err := ioutil.ReadDir(hlsFolder)
 			if err == nil {
+				log.Printf("找到 %d 个条目\n", len(hlsEntries))
 				for _, entry := range hlsEntries {
 					if entry.IsDir() {
 						playlistPath := filepath.Join(hlsFolder, entry.Name(), "playlist.m3u8")
@@ -263,10 +274,16 @@ func (s *VideoService) GetAnimeInfo(folderName string) (models.AnimeInfo, bool) 
 								FileName: entry.Name(),
 							})
 							hasVideoFiles = true
+							log.Printf("找到视频文件: %s, URL: %s\n", entry.Name(), hlsURL)
 						}
 					}
 				}
+				log.Printf("扫描完成，共找到 %d 个视频文件\n", len(videos))
+			} else {
+				log.Printf("读取HLS文件夹失败: %v\n", err)
 			}
+		} else {
+			log.Printf("HLS文件夹不存在: %s, 错误: %v\n", hlsFolder, err)
 		}
 	}
 
