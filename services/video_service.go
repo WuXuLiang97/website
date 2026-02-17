@@ -443,32 +443,6 @@ func (s *VideoService) GetAnimeVideos(folderName string) []models.VideoFile {
 	var videos []models.VideoFile
 	addedVideos := make(map[string]bool)
 
-	animeFolder := filepath.Join(videosDir, folderName)
-
-	if _, err := os.Stat(animeFolder); err == nil {
-		videoFiles, err := ioutil.ReadDir(animeFolder)
-		if err == nil {
-			for _, file := range videoFiles {
-				if !file.IsDir() && utils.IsVideoFile(file.Name(), allowedFormats) {
-					videoPath := utils.NormalizeURLPath(strings.Join([]string{"/", videosDir, folderName, file.Name()}, "/"))
-
-					hlsPath := s.getHLSURL(videoPath)
-					if _, err := os.Stat(strings.TrimPrefix(hlsPath, "/")); err == nil {
-						videoPath = hlsPath
-					}
-
-					if !addedVideos[videoPath] {
-						videos = append(videos, models.VideoFile{
-							Path:     videoPath,
-							FileName: file.Name(),
-						})
-						addedVideos[videoPath] = true
-					}
-				}
-			}
-		}
-	}
-
 	hlsAnimePath := filepath.Join(hlsDir, folderName)
 	if _, err := os.Stat(hlsAnimePath); err == nil {
 		hlsEntries, err := ioutil.ReadDir(hlsAnimePath)
